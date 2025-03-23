@@ -12,10 +12,9 @@ import {
     BsChevronDown,
     BsChevronUp,
     BsGear,
-    BsPerson,
-    BsBoxArrowLeft,
-    BsBoxArrowRight,
     BsPencil,
+    BsFillPersonCheckFill,
+    BsPersonCircle
 } from 'react-icons/bs';
 import { GrUpgrade } from 'react-icons/gr';
 import app from '../ts/app';
@@ -33,7 +32,7 @@ const Panel: React.FC<{
     const [accountExpand, setAccountExpand] = useState<boolean>(false);
     const [settingsExpand, setSettingsExpand] = useState<boolean>(false);
     const [optionsExpand, setOptionsExpand] = useState<boolean>(false);
-    const [openSignUpModal, setSignUpModal] = useState<boolean>(false);
+    const [openAccountsModal, setAccountsModal] = useState<boolean>(false);
 
     const handleAccountToggle = () => {
         setAccountExpand(!accountExpand);
@@ -81,7 +80,7 @@ const Panel: React.FC<{
                 <List sx={{ scrollBehavior: 'smooth' }}>
                     {/* User Account Section */}
                     <ListItemButton onClick={handleAccountToggle}>
-                        <BsPerson style={{ marginRight: '8px' }} />
+                        <BsPersonCircle style={{ marginRight: '8px' ,fontSize:'1.5rem'}} />
                         <ListItemText
                             primary={userName}
                             secondary={userEmail}
@@ -90,7 +89,7 @@ const Panel: React.FC<{
                     </ListItemButton>
                     <Divider />
                     <Collapse in={accountExpand} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
+                       <List component="div" disablePadding>
                             <ListItemButton sx={{ pl: 4 }}>
                                 <GrUpgrade />
                                 <ListItemText
@@ -105,27 +104,17 @@ const Panel: React.FC<{
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
-                            <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() => {
-                                    if (!isLogged) {
-                                        setSignUpModal(true);
-                                    } else {
-                                        signOutHandler();
-                                    }
-                                }}
+                            <ListItemButton sx={{ pl: 4 }}
+                                onClick={()=>setAccountsModal(true)}
                             >
-                                {isLogged ? (
-                                    <BsBoxArrowLeft />
-                                ) : (
-                                    <BsBoxArrowRight />
-                                )}
+                                <BsFillPersonCheckFill/>
                                 <ListItemText
-                                    primary={isLogged ? 'Log Out' : 'Log In'}
+                                    primary="Accounts"
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
-                        </List>
+                           
+                       </List>
                     </Collapse>
 
                     {/* Settings Section */}
@@ -171,9 +160,9 @@ const Panel: React.FC<{
                 </List>
             </Drawer>
             <Accounts
-                open={openSignUpModal}
+                open={openAccountsModal}
                 handleClose={() => {
-                    setSignUpModal(false);
+                    setAccountsModal(false);
                 }}
             />
         </>

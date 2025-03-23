@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Modal,
     Box,
@@ -11,15 +11,18 @@ import {
     IconButton,
     Divider,
     Avatar,
+    
 } from '@mui/material';
 import {
     signInWithPopup,
     getAuth,
     GoogleAuthProvider,
     signOut,
+    onAuthStateChanged,
 } from 'firebase/auth';
 import { MdDelete } from 'react-icons/md';
 import app from './../ts/app'; // Adjust the import path as per your project structure
+import  {DarkOutlinedSnackbar} from './Utils'
 
 // Define styles for the modal
 const modalContainerStyle = {
@@ -50,14 +53,13 @@ interface SignInModalProps {
 interface Account {
     id: number;
     name: string;
+    email:string;
 }
 
 const Accounts: React.FC<SignInModalProps> = ({ open, handleClose }) => {
     // State for linked accounts
-    const [accounts, setAccounts] = useState<Account[]>([
-        { id: 1, name: 'user1@example.com' },
-        { id: 2, name: 'user2@example.com' },
-    ]);
+    const [accounts, setAccounts] = useState<Account[]>([]);
+    const [showSnack,setShowSnack] = useState<boolean>(false)
 
     // Authentication instance
     const auth = getAuth(app);
@@ -68,9 +70,11 @@ const Accounts: React.FC<SignInModalProps> = ({ open, handleClose }) => {
         try {
             await signInWithPopup(auth, provider);
             // Optionally update user info here
-            handleClose();
+
+            window.location.reload()
         } catch (error) {
             console.error('Google Sign-In Error:', error);
+            setShowSnack(true)
         }
     };
     const handleRemoveAccount = (id: number) => {
@@ -81,13 +85,36 @@ const Accounts: React.FC<SignInModalProps> = ({ open, handleClose }) => {
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            handleClose();
+            window.location.reload()
         } catch (error) {
             console.error('Logout Error:', error);
+            setShowSnack(true)
         }
     };
 
+    useEffect(()=>{
+        onAuthStateChanged(auth,user=>{
+            if(user){
+                saveDataInLocalStorageAsJSON({
+                    name:user.displayName,
+                    id:user.uid,
+                    email:user.email
+                },'saveAccount')
+
+                const saveData = localStorage.getItem('saveAccount')
+                const extract = JSON.parse(saveData? saveData:'{}')
+                
+            const newUser = {
+                name:extract.name,
+                id : extract.uid,
+                email:extract.email
+            }
+            setAccounts([...accounts,newUser])
+        }
+    })
+    },[])
     return (
+        <>
         <Modal open={open} onClose={handleClose} sx={modalContainerStyle}>
             <Box sx={contentStyle}>
                 {/* Header Section */}
@@ -151,9 +178,17 @@ const Accounts: React.FC<SignInModalProps> = ({ open, handleClose }) => {
                 >
                     Logout
                 </Button>
+                    <DarkOutlinedSnackbar severity='error' message='Something went wrong' open={showSnack} onClose={()=>setShowSnack(false)}/>
             </Box>
         </Modal>
+        </>
     );
 };
+
+function saveDataInLocalStorageAsJSON(details:any,key:string){
+    const saveDataAsJsonString = JSON.stringify(details,null,2);
+    localStorage.setItem(key,saveDataAsJsonString);
+}
+
 
 export default Accounts;

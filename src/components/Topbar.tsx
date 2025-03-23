@@ -1,7 +1,9 @@
 import { JSX } from '@emotion/react/jsx-runtime';
-import { AppBar, Toolbar, IconButton, Chip, Avatar, Box } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Box } from '@mui/material';
 import Panel from './Panel';
 import { BsSearch } from 'react-icons/bs';
+import {BsBell} from 'react-icons/bs'
+import { FaEllipsisV } from 'react-icons/fa'
 
 import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -67,26 +69,19 @@ function Topbar(): JSX.Element {
                     </Box>
 
                     {/* Right section: Search icon and user chip */}
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton sx={{ mr: 1 }}>
-                            <BsSearch style={{ fontSize: '1rem' }} />
+                            <BsSearch style={{ fontSize: '1.2rem' }} />
                         </IconButton>
-                        <Chip
-                            label={truncatedName}
-                            avatar={
-                                <Avatar sx={{ width: 30, height: 30 }}>
-                                    {userData.userName[0]}
-                                </Avatar>
-                            }
-                            sx={{
-                                height: '30px',
-                            }}
-                            clickable
-                            color="primary"
-                            variant="outlined"
-                            onClick={() => setOpenPanel(true)}
-                        />
-                    </Box>
+                        <IconButton sx={{ mr: 1 }}>
+                            <BsBell style={{ fontSize: '1.2rem' }} />
+                        </IconButton>
+                        <IconButton sx={{ mr: 1 }}
+                            onClick={()=>setOpenPanel(true)}
+                        >
+                            <FaEllipsisV style={{ fontSize: '1.2rem' }} />
+                        </IconButton>
+                   </Box>
                 </Toolbar>
                 <Panel
                     userEmail={userData.userEmail}
@@ -97,6 +92,7 @@ function Topbar(): JSX.Element {
                 />
             </AppBar>
             <DarkOutlinedSnackbar
+                severity='info'
                 open={openSnack}
                 onClose={() => setOpenSnack(false)}
                 message="You are not Logged In"

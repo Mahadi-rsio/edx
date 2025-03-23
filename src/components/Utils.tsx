@@ -6,23 +6,25 @@ interface DarkOutlinedSnackbarProps {
   open: boolean;
   onClose: (event: React.SyntheticEvent | Event, reason?: string) => void;
   message: string;
+  severity:any;
 }
 
 export const DarkOutlinedSnackbar: React.FC<DarkOutlinedSnackbarProps> = ({
   open,
   onClose,
   message,
+  severity
 }) => {
   return (
     <Snackbar open={open} autoHideDuration={3000} onClose={onClose}>
       <Alert
-        severity="info"
+        severity={severity}
         variant="outlined"
         sx={{
-          backgroundColor: 'rgba(50, 50, 50, 0.3)', // dark with transparency
+          backgroundColor: 'rgba(0, 0, 0, 0.1)', // dark with transparency
           color: 'white',
           border: '1px solid rgba(55, 55, 55, 0.6)',
-          backdropFilter: 'blur(30px)', // apply the blur effect
+          backdropFilter: 'blur(50px)', // apply the blur effect
           borderRadius: 10,
         }}
       >
@@ -31,3 +33,18 @@ export const DarkOutlinedSnackbar: React.FC<DarkOutlinedSnackbarProps> = ({
     </Snackbar>
   );
 };
+
+
+
+function saveDataInLocalStorageAsJSON(details:object,key:string){
+    const saveDataAsJsonString = JSON.stringify(details,null,2);
+    localStorage.setItem(key,saveDataAsJsonString);
+}
+
+function getDataFromLocalStorageAsJSON(key:string){
+    const storedJsonData = localStorage.getItem(key);
+    const extractedDataFromLocalStorage = JSON.parse(storedJsonData? storedJsonData:'')
+    return extractedDataFromLocalStorage;
+}
+export {saveDataInLocalStorageAsJSON,getDataFromLocalStorageAsJSON}
+
