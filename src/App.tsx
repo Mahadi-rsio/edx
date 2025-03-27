@@ -4,6 +4,8 @@ import { CircularProgress, Box } from '@mui/material';
 
 // Lazy load the AuthForm component
 const Home = lazy(() => import('./components/Home.tsx'));
+const CreatePost = lazy(() => import('./components/CreatePost.tsx'));
+const Test = lazy(()=>import('./components/Test.tsx'))
 
 function App() {
     return (
@@ -24,6 +26,8 @@ function App() {
             >
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/create_post" element={<CreatePost/>}/>
+                    <Route path='/test' element={<Test/>}/>
                 </Routes>
             </Suspense>
         </Router>

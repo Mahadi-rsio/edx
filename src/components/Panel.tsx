@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
     Drawer,
     List,
-    ListItem,
     ListItemText,
     Collapse,
     ListItemButton,
@@ -14,12 +13,12 @@ import {
     BsGear,
     BsPencil,
     BsFillPersonCheckFill,
-    BsPersonCircle
+    BsPersonCircle,
+    BsPlus
 } from 'react-icons/bs';
 import { GrUpgrade } from 'react-icons/gr';
-import app from '../ts/app';
-import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 import Accounts from './Accounts';
+import { useNavigate } from 'react-router-dom'
 
 const Panel: React.FC<{
     open: boolean;
@@ -27,12 +26,13 @@ const Panel: React.FC<{
     userName: string;
     userEmail: string;
     isLogged: boolean;
-}> = ({ open, setClose, userName, userEmail, isLogged }) => {
+}> = ({ open, setClose, userName, userEmail }) => {
     // State for each expandable section
     const [accountExpand, setAccountExpand] = useState<boolean>(false);
     const [settingsExpand, setSettingsExpand] = useState<boolean>(false);
     const [optionsExpand, setOptionsExpand] = useState<boolean>(false);
     const [openAccountsModal, setAccountsModal] = useState<boolean>(false);
+    const navigate = useNavigate()
 
     const handleAccountToggle = () => {
         setAccountExpand(!accountExpand);
@@ -45,17 +45,6 @@ const Panel: React.FC<{
     const handleOptionsToggle = () => {
         setOptionsExpand(!optionsExpand);
     };
-
-    const signOutHandler = () => {
-        const auth = getAuth(app);
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                signOut(auth);
-                window.location.reload();
-            }
-        });
-    };
-
     return (
         <>
             <Drawer
@@ -80,7 +69,9 @@ const Panel: React.FC<{
                 <List sx={{ scrollBehavior: 'smooth' }}>
                     {/* User Account Section */}
                     <ListItemButton onClick={handleAccountToggle}>
-                        <BsPersonCircle style={{ marginRight: '8px' ,fontSize:'1.5rem'}} />
+                        <BsPersonCircle
+                            style={{ marginRight: '8px', fontSize: '1.5rem' }}
+                        />
                         <ListItemText
                             primary={userName}
                             secondary={userEmail}
@@ -89,7 +80,7 @@ const Panel: React.FC<{
                     </ListItemButton>
                     <Divider />
                     <Collapse in={accountExpand} timeout="auto" unmountOnExit>
-                       <List component="div" disablePadding>
+                        <List component="div" disablePadding>
                             <ListItemButton sx={{ pl: 4 }}>
                                 <GrUpgrade />
                                 <ListItemText
@@ -104,17 +95,17 @@ const Panel: React.FC<{
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}
-                                onClick={()=>setAccountsModal(true)}
+                            <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() => setAccountsModal(true)}
                             >
-                                <BsFillPersonCheckFill/>
+                                <BsFillPersonCheckFill />
                                 <ListItemText
                                     primary="Accounts"
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
-                           
-                       </List>
+                        </List>
                     </Collapse>
 
                     {/* Settings Section */}
@@ -154,9 +145,10 @@ const Panel: React.FC<{
                     </Collapse>
 
                     {/* Additional Non-Clickable Item */}
-                    <ListItem>
-                        <ListItemText primary="Hello" />
-                    </ListItem>
+                    <ListItemButton onClick={()=>navigate('/create_post')}>
+                        <BsPlus/>
+                        <ListItemText primary="Create Post"/>
+                    </ListItemButton>
                 </List>
             </Drawer>
             <Accounts

@@ -1,11 +1,11 @@
 import TopBar from './Topbar';
-import GroupSuggetionCard from './GroupSuggestion';
+import PostContainer from './PostContainer';
 
 function Home() {
     return (
         <>
             <TopBar />
-            <GroupSuggetionCard />
+            <PostContainer />
         </>
     );
 }

@@ -2,13 +2,13 @@ import { JSX } from '@emotion/react/jsx-runtime';
 import { AppBar, Toolbar, IconButton, Box } from '@mui/material';
 import Panel from './Panel';
 import { BsSearch } from 'react-icons/bs';
-import {BsBell} from 'react-icons/bs'
-import { FaEllipsisV } from 'react-icons/fa'
+import { BsBell } from 'react-icons/bs';
+import { FaEllipsisV } from 'react-icons/fa';
 
 import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-import app from '../ts/app';
+import {app} from '../ts/app';
 import Accounts from './Accounts';
 import { DarkOutlinedSnackbar } from './Utils';
 
@@ -41,11 +41,11 @@ function Topbar(): JSX.Element {
     }, []);
 
     // Truncate the name to 8 characters, adding "..." if necessary
-    const truncatedName =
-        userData.userName.length > 8
-            ? userData.userName.substring(0, 8) + '...'
-            : userData.userName;
-
+    //const truncatedName =
+    //    userData.userName.length > 8
+    //        ? userData.userName.substring(0, 8) + '...'
+    //        : userData.userName;
+    //
     return (
         <>
             <AppBar
@@ -56,7 +56,7 @@ function Topbar(): JSX.Element {
                     borderBottom: '1px solid rgb(50,50,50,0.7)',
                     borderRadius: 1,
                 }}
-                position="static"
+                position="sticky"
             >
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
                     {/* Left section: Hamburger menu and logo */}
@@ -69,19 +69,20 @@ function Topbar(): JSX.Element {
                     </Box>
 
                     {/* Right section: Search icon and user chip */}
-                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton sx={{ mr: 1 }}>
                             <BsSearch style={{ fontSize: '1.2rem' }} />
                         </IconButton>
                         <IconButton sx={{ mr: 1 }}>
                             <BsBell style={{ fontSize: '1.2rem' }} />
                         </IconButton>
-                        <IconButton sx={{ mr: 1 }}
-                            onClick={()=>setOpenPanel(true)}
+                        <IconButton
+                            sx={{ mr: 1 }}
+                            onClick={() => setOpenPanel(true)}
                         >
                             <FaEllipsisV style={{ fontSize: '1.2rem' }} />
                         </IconButton>
-                   </Box>
+                    </Box>
                 </Toolbar>
                 <Panel
                     userEmail={userData.userEmail}
@@ -92,7 +93,6 @@ function Topbar(): JSX.Element {
                 />
             </AppBar>
             <DarkOutlinedSnackbar
-                severity='info'
                 open={openSnack}
                 onClose={() => setOpenSnack(false)}
                 message="You are not Logged In"
