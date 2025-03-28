@@ -20,7 +20,7 @@ import {
     onAuthStateChanged,
 } from 'firebase/auth';
 import { MdDelete } from 'react-icons/md';
-import {app} from './../ts/app'; // Adjust the import path as per your project structure
+import { app } from './../ts/app'; // Adjust the import path as per your project structure
 import { DarkOutlinedSnackbar } from './Utils';
 
 // Define styles for the modal
@@ -92,9 +92,9 @@ const Accounts: React.FC<SignInModalProps> = ({ open, handleClose }) => {
             if (user) {
                 saveDataInLocalStorageAsJSON(
                     {
-                        name: user.displayName? user.displayName : '',
-                        id: user.uid? user.uid : 123,
-                        email: user.email? user.email : '',
+                        name: user.displayName ? user.displayName : '',
+                        id: user.uid ? user.uid : 123,
+                        email: user.email ? user.email : '',
                     },
                     'saveAccount',
                 );
@@ -146,9 +146,7 @@ const Accounts: React.FC<SignInModalProps> = ({ open, handleClose }) => {
                                 <ListItem key={account.id}>
                                     <ListItemText primary={account.name} />
                                     <ListItemSecondaryAction>
-                                        <IconButton
-                                            edge="end"
-                                        >
+                                        <IconButton edge="end">
                                             <MdDelete />
                                         </IconButton>
                                     </ListItemSecondaryAction>

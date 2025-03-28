@@ -8,7 +8,7 @@ import { FaEllipsisV } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-import {app} from '../ts/app';
+import { app } from '../ts/app';
 import Accounts from './Accounts';
 import { DarkOutlinedSnackbar } from './Utils';
 

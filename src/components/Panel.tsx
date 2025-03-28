@@ -14,11 +14,11 @@ import {
     BsPencil,
     BsFillPersonCheckFill,
     BsPersonCircle,
-    BsPlus
+    BsPlus,
 } from 'react-icons/bs';
 import { GrUpgrade } from 'react-icons/gr';
 import Accounts from './Accounts';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 const Panel: React.FC<{
     open: boolean;
@@ -32,7 +32,7 @@ const Panel: React.FC<{
     const [settingsExpand, setSettingsExpand] = useState<boolean>(false);
     const [optionsExpand, setOptionsExpand] = useState<boolean>(false);
     const [openAccountsModal, setAccountsModal] = useState<boolean>(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleAccountToggle = () => {
         setAccountExpand(!accountExpand);
@@ -145,9 +145,9 @@ const Panel: React.FC<{
                     </Collapse>
 
                     {/* Additional Non-Clickable Item */}
-                    <ListItemButton onClick={()=>navigate('/create_post')}>
-                        <BsPlus/>
-                        <ListItemText primary="Create Post"/>
+                    <ListItemButton onClick={() => navigate('/create_post')}>
+                        <BsPlus />
+                        <ListItemText primary="Create Post" />
                     </ListItemButton>
                 </List>
             </Drawer>
