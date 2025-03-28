@@ -16,11 +16,21 @@ import {
     Box,
     Drawer,
     List,
-    ListItem,
+    ListItemButton,
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
-import { BsHeart, BsChat, BsShare, BsThreeDots, BsTrash, BsPencilSquare } from 'react-icons/bs';
+import {
+    BsHeart,
+    BsChat,
+    BsShare,
+    BsThreeDots,
+    BsTrash,
+    BsPencilSquare,
+    BsFlag,
+    BsBookmark,
+    BsEyeSlash,
+} from 'react-icons/bs';
 
 export interface FacebookPostProps {
     postId: string;
@@ -186,18 +196,36 @@ const Post: React.FC<FacebookPostProps> = ({
                     }}
                 >
                     <List>
-                        <ListItem button onClick={() => { /* Handle edit action here */ setDrawerOpen(false); }}>
+                        <ListItemButton onClick={() => { /* Handle edit action here */ setDrawerOpen(false); }}>
                             <ListItemIcon>
                                 <BsPencilSquare size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Edit post" />
-                        </ListItem>
-                        <ListItem button onClick={() => { /* Handle delete action here */ setDrawerOpen(false); }}>
+                        </ListItemButton>
+                        <ListItemButton onClick={() => { /* Handle delete action here */ setDrawerOpen(false); }}>
                             <ListItemIcon>
                                 <BsTrash size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Delete this post" />
-                        </ListItem>
+                        </ListItemButton>
+                        <ListItemButton onClick={() => { /* Handle report action here */ setDrawerOpen(false); }}>
+                            <ListItemIcon>
+                                <BsFlag size={20} />
+                            </ListItemIcon>
+                            <ListItemText primary="Report this" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => { /* Handle save action here */ setDrawerOpen(false); }}>
+                            <ListItemIcon>
+                                <BsBookmark size={20} />
+                            </ListItemIcon>
+                            <ListItemText primary="Save this post" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => { /* Handle not interested action here */ setDrawerOpen(false); }}>
+                            <ListItemIcon>
+                                <BsEyeSlash size={20} />
+                            </ListItemIcon>
+                            <ListItemText primary="Not interested" />
+                        </ListItemButton>
                     </List>
                 </Box>
             </Drawer>
