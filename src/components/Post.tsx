@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 import {
     Card,
     CardHeader,
@@ -30,6 +31,7 @@ import {
     BsFlag,
     BsBookmark,
     BsEyeSlash,
+    BsFacebook
 } from 'react-icons/bs';
 
 export interface FacebookPostProps {
@@ -66,6 +68,8 @@ const Post: React.FC<FacebookPostProps> = ({
     const contentThreshold = 300;
     const isContentLong = content.length > contentThreshold;
 
+    const navigate = useNavigate()
+
     const toggleDrawer = (open: boolean) => () => {
         setDrawerOpen(open);
     };
@@ -78,7 +82,7 @@ const Post: React.FC<FacebookPostProps> = ({
             >
                 <CardHeader
                     avatar={
-                        <Avatar src={avatarUrl} alt={username}>
+                        <Avatar src={avatarUrl} alt={username} onClick={()=>{navigate('/test')}}>
                             {username.charAt(0)}
                         </Avatar>
                     }
@@ -125,7 +129,7 @@ const Post: React.FC<FacebookPostProps> = ({
                                     label={`#${tag}`}
                                     variant="outlined"
                                     clickable
-                                    color="primary"
+                                    color="info"
                                     size="small"
                                 />
                             ))}
@@ -192,7 +196,7 @@ const Post: React.FC<FacebookPostProps> = ({
                     role="presentation"
                     sx={{
                         width: 'auto',
-                        padding: 2,
+                        padding: 1,
                     }}
                 >
                     <List>
@@ -212,7 +216,7 @@ const Post: React.FC<FacebookPostProps> = ({
                             <ListItemIcon>
                                 <BsFlag size={20} />
                             </ListItemIcon>
-                            <ListItemText primary="Report this" />
+                            <ListItemText primary="Report this"/>
                         </ListItemButton>
                         <ListItemButton onClick={() => { /* Handle save action here */ setDrawerOpen(false); }}>
                             <ListItemIcon>
@@ -225,6 +229,12 @@ const Post: React.FC<FacebookPostProps> = ({
                                 <BsEyeSlash size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Not interested" />
+                        </ListItemButton>
+                        <ListItemButton onClick={()=>{}}>
+                            <ListItemIcon>
+                                <BsFacebook/>
+                            </ListItemIcon>
+                            <ListItemText primary='Share this post on facebook'/>
                         </ListItemButton>
                     </List>
                 </Box>
