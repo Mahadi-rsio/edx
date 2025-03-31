@@ -15,7 +15,6 @@ import {
     BsFillPersonCheckFill,
     BsPersonCircle,
     BsPlus,
-    BsList,
 } from 'react-icons/bs';
 import { GrUpgrade } from 'react-icons/gr';
 import Accounts from './Accounts';

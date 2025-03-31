@@ -6,6 +6,7 @@ import { CircularProgress, Box } from '@mui/material';
 const Home = lazy(() => import('./components/Home.tsx'));
 const CreatePost = lazy(() => import('./components/CreatePost.tsx'));
 const Test = lazy(() => import('./components/Test.tsx'));
+const EditProfile = lazy(() => import('./components/EditProfile.tsx'));
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/create_post" element={<CreatePost />} />
                     <Route path="/test" element={<Test />} />
+                    <Route path="/edit_profile" element={<EditProfile />} />
                 </Routes>
             </Suspense>
         </Router>

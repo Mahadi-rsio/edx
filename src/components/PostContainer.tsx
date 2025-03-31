@@ -12,14 +12,14 @@ import {
 import GroupSuggetion from './GroupSuggestion';
 import Post from './Post';
 import { db } from './../ts/app';
-import { CircularProgress, Button } from '@mui/material';
+import { CircularProgress, Button, Typography } from '@mui/material';
 
 interface PostData {
     id: string;
     userName: string;
     likeCount?: number;
     content: string;
-    timestamp?: any;
+    timestamp?: string;
     commentCount?: number;
     tags?: string[];
     avatarUrl?: string;
@@ -177,11 +177,14 @@ const PostContainer: React.FC = () => {
             {/* Error message with retry option */}
             {error && (
                 <div style={centerStyle}>
-                    <p style={{ fontSize: '0.9rem', color: 'red' }}>{error}</p>
+                    <Typography color="error" sx={{ mt: 1 }}>
+                        Something went wrong
+                    </Typography>
                     <Button
                         variant="contained"
                         color="primary"
                         onClick={fetchPosts}
+                        sx={{ mt: 2 }}
                     >
                         Retry
                     </Button>
