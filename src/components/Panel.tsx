@@ -15,6 +15,7 @@ import {
     BsFillPersonCheckFill,
     BsPersonCircle,
     BsPlus,
+    BsList,
 } from 'react-icons/bs';
 import { GrUpgrade } from 'react-icons/gr';
 import Accounts from './Accounts';
@@ -123,23 +124,23 @@ const Panel: React.FC<{
                                 <ListItemText primary="Privacy" />
                             </ListItemButton>
                             <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Notifications" />
+                                <ListItemText primary="Password" />
                             </ListItemButton>
                         </List>
                     </Collapse>
 
                     {/* Expandable Options Section */}
                     <ListItemButton onClick={handleOptionsToggle}>
-                        <ListItemText primary="Expandable Options" />
+                        <ListItemText primary="Groups" />
                         {optionsExpand ? <BsChevronUp /> : <BsChevronDown />}
                     </ListItemButton>
                     <Collapse in={optionsExpand} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Option 1" />
+                                <ListItemText primary="Create Group" />
                             </ListItemButton>
                             <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Option 2" />
+                                <ListItemText primary="Your Groups" />
                             </ListItemButton>
                         </List>
                     </Collapse>

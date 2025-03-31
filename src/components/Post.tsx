@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import {
     Card,
     CardHeader,
@@ -31,7 +31,7 @@ import {
     BsFlag,
     BsBookmark,
     BsEyeSlash,
-    BsFacebook
+    BsFacebook,
 } from 'react-icons/bs';
 
 export interface FacebookPostProps {
@@ -68,7 +68,7 @@ const Post: React.FC<FacebookPostProps> = ({
     const contentThreshold = 300;
     const isContentLong = content.length > contentThreshold;
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const toggleDrawer = (open: boolean) => () => {
         setDrawerOpen(open);
@@ -82,12 +82,21 @@ const Post: React.FC<FacebookPostProps> = ({
             >
                 <CardHeader
                     avatar={
-                        <Avatar src={avatarUrl} alt={username} onClick={()=>{navigate('/test')}}>
+                        <Avatar
+                            src={avatarUrl}
+                            alt={username}
+                            onClick={() => {
+                                navigate('/test');
+                            }}
+                        >
                             {username.charAt(0)}
                         </Avatar>
                     }
                     action={
-                        <IconButton aria-label="more options" onClick={toggleDrawer(true)}>
+                        <IconButton
+                            aria-label="more options"
+                            onClick={toggleDrawer(true)}
+                        >
                             <BsThreeDots size={20} />
                         </IconButton>
                     }
@@ -122,7 +131,12 @@ const Post: React.FC<FacebookPostProps> = ({
                         <Typography variant="body1">{content}</Typography>
                     </Box>
                     {hashtags.length > 0 && (
-                        <Stack direction="row" spacing={1} mt={2} flexWrap="wrap">
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            mt={2}
+                            flexWrap="wrap"
+                        >
                             {hashtags.map((tag, index) => (
                                 <Chip
                                     key={index}
@@ -200,41 +214,71 @@ const Post: React.FC<FacebookPostProps> = ({
                     }}
                 >
                     <List>
-                        <ListItemButton onClick={() => { /* Handle edit action here */ setDrawerOpen(false); }}>
+                        <ListItemButton
+                            onClick={() => {
+                                /* Handle edit action here */ setDrawerOpen(
+                                    false,
+                                );
+                            }}
+                        >
                             <ListItemIcon>
                                 <BsPencilSquare size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Edit post" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => { /* Handle delete action here */ setDrawerOpen(false); }}>
+                        <ListItemButton
+                            onClick={() => {
+                                /* Handle delete action here */ setDrawerOpen(
+                                    false,
+                                );
+                            }}
+                        >
                             <ListItemIcon>
                                 <BsTrash size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Delete this post" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => { /* Handle report action here */ setDrawerOpen(false); }}>
+                        <ListItemButton
+                            onClick={() => {
+                                /* Handle report action here */ setDrawerOpen(
+                                    false,
+                                );
+                            }}
+                        >
                             <ListItemIcon>
                                 <BsFlag size={20} />
                             </ListItemIcon>
-                            <ListItemText primary="Report this"/>
+                            <ListItemText primary="Report this" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => { /* Handle save action here */ setDrawerOpen(false); }}>
+                        <ListItemButton
+                            onClick={() => {
+                                /* Handle save action here */ setDrawerOpen(
+                                    false,
+                                );
+                            }}
+                        >
                             <ListItemIcon>
                                 <BsBookmark size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Save this post" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => { /* Handle not interested action here */ setDrawerOpen(false); }}>
+                        <ListItemButton
+                            onClick={() => {
+                                /* Handle not interested action here */ setDrawerOpen(
+                                    false,
+                                );
+                            }}
+                        >
                             <ListItemIcon>
                                 <BsEyeSlash size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Not interested" />
                         </ListItemButton>
-                        <ListItemButton onClick={()=>{}}>
+                        <ListItemButton onClick={() => {}}>
                             <ListItemIcon>
-                                <BsFacebook/>
+                                <BsFacebook />
                             </ListItemIcon>
-                            <ListItemText primary='Share this post on facebook'/>
+                            <ListItemText primary="Share this post on facebook" />
                         </ListItemButton>
                     </List>
                 </Box>
