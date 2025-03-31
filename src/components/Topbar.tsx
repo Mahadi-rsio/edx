@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import { app } from '../ts/app';
-import Accounts from './Accounts';
 import { DarkOutlinedSnackbar } from './Utils';
 
 interface User {
@@ -19,7 +18,7 @@ interface User {
 
 function Topbar(): JSX.Element {
     const [openPanel, setOpenPanel] = useState<boolean>(false);
-    const [openSignUpModal, setOpenSignUpModal] = useState<boolean>(false);
+    //    const [openSignUpModal, setOpenSignUpModal] = useState<boolean>(false);
     const [userData, setUserData] = useState<User>({
         userName: 'Anonymus User',
         userEmail: '',
@@ -95,13 +94,13 @@ function Topbar(): JSX.Element {
             <DarkOutlinedSnackbar
                 open={openSnack}
                 onClose={() => setOpenSnack(false)}
-                message="You are not Logged In"
+                message={
+                    isLogged
+                        ? `You are Logged as ${userData.userName}`
+                        : 'You are not Logged In'
+                }
             />
             {/* Move the Snackbar outside of the AppBar */}
-            <Accounts
-                open={openSignUpModal}
-                handleClose={() => setOpenSignUpModal(false)}
-            />
         </>
     );
 }

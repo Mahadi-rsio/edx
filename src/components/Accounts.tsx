@@ -1,190 +1,181 @@
-import React, { useEffect, useState } from 'react';
+// AccountsPage.jsx
+import { useEffect, useState } from 'react';
 import {
-    Modal,
+    Container,
     Box,
     Typography,
     Button,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemSecondaryAction,
-    IconButton,
-    Divider,
-    Avatar,
+    AppBar,
+    Toolbar,
 } from '@mui/material';
 import {
-    signInWithPopup,
-    getAuth,
     GoogleAuthProvider,
+    signInWithPopup,
     signOut,
-    onAuthStateChanged,
+    deleteUser,
 } from 'firebase/auth';
-import { MdDelete } from 'react-icons/md';
-import { app } from './../ts/app'; // Adjust the import path as per your project structure
-import { DarkOutlinedSnackbar } from './Utils';
+import { auth } from '../ts/app';
 
-// Define styles for the modal
-const modalContainerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-};
+const googleProvider = new GoogleAuthProvider();
 
-const contentStyle = {
-    width: { xs: '90%', sm: '70%', md: '40%' },
-    maxWidth: '500px',
-    bgcolor: 'transparent',
-    backdropFilter: 'blur(25px)',
-    borderRadius: 2,
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    boxShadow: 24,
-    p: 3,
-    color: 'white',
-};
-
-// Define the props interface
-interface SignInModalProps {
-    open: boolean;
-    handleClose: () => void;
+interface User {
+    userEmail: string;
+    uid: string;
+    displayName: string;
 }
 
-// Define the account interface
-interface Account {
-    id: number | string;
-    name: string;
-    email: string;
-}
+const Accounts = () => {
+    const [user, setUser] = useState<User>({
+        userEmail: '',
+        displayName: '',
+        uid: '',
+    });
 
-const Accounts: React.FC<SignInModalProps> = ({ open, handleClose }) => {
-    // State for linked accounts
-    const [accounts, setAccounts] = useState<Account[]>([]);
-    const [showSnack, setShowSnack] = useState<boolean>(false);
+    // Listen to authentication state changes
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+            if (currentUser) {
+                setUser({
+                    uid: currentUser.uid ? currentUser.uid : '',
+                    displayName: currentUser.displayName
+                        ? currentUser.displayName
+                        : '',
+                    userEmail: currentUser.email ? currentUser.email : '',
+                });
+            }
+        });
+        return () => unsubscribe();
+    }, []);
 
-    // Authentication instance
-    const auth = getAuth(app);
-
-    // Handler for Google sign-in
-    const handleGoogleSignIn = async () => {
-        const provider = new GoogleAuthProvider();
+    // Sign in with Google
+    const signInWithGoogle = async () => {
         try {
-            await signInWithPopup(auth, provider);
-            // Optionally update user info here
-
-            window.location.reload();
+            await signInWithPopup(auth, googleProvider);
         } catch (error) {
-            console.error('Google Sign-In Error:', error);
-            setShowSnack(true);
+            console.error('Google sign-in error:', error);
         }
     };
-    // Handler for logout
+
+    // Logout functionality
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            window.location.reload();
         } catch (error) {
-            console.error('Logout Error:', error);
-            setShowSnack(true);
+            console.error('Logout error:', error);
         }
     };
 
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                saveDataInLocalStorageAsJSON(
-                    {
-                        name: user.displayName ? user.displayName : '',
-                        id: user.uid ? user.uid : 123,
-                        email: user.email ? user.email : '',
-                    },
-                    'saveAccount',
-                );
-
-                const saveData = localStorage.getItem('saveAccount');
-                const extract = JSON.parse(saveData ? saveData : '{}');
-
-                const newUser = {
-                    name: extract.name,
-                    id: extract.uid,
-                    email: extract.email,
-                };
-                setAccounts([...accounts, newUser]);
+    // Delete account functionality
+    const handleDeleteAccount = async () => {
+        try {
+            if (auth.currentUser) {
+                await deleteUser(auth.currentUser);
             }
-        });
-    }, []);
+        } catch (error) {
+            console.error('Delete account error:', error);
+        }
+    };
+
+    // Placeholders for additional features (disable or remove account)
+    const handleDisableAccount = () => {
+        console.log('Disable account feature not implemented.');
+    };
+
+    const handleRemoveAccount = () => {
+        console.log('Remove account feature not implemented.');
+    };
+
     return (
-        <>
-            <Modal open={open} onClose={handleClose} sx={modalContainerStyle}>
-                <Box sx={contentStyle}>
-                    {/* Header Section */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <Avatar sx={{ width: 50, height: 50, mr: 2 }}>U</Avatar>
-                        <Box>
-                            <Typography variant="h6">No User</Typography>
-                            <Typography variant="body2" color="textSecondary">
-                                abc@gmail.com
-                            </Typography>
-                        </Box>
-                    </Box>
+        <Container maxWidth="sm">
+            {/* App Bar */}
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6">Accounts Manager</Typography>
+                </Toolbar>
+            </AppBar>
 
-                    <Divider sx={{ my: 2 }} />
-
-                    {/* Sign In Options */}
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleGoogleSignIn}
-                        sx={{ mb: 2 }}
-                    >
-                        Sign in with Google
-                    </Button>
-                    <Divider sx={{ my: 2 }} />
-
-                    {/* Accounts List */}
-                    {accounts.length > 0 ? (
-                        <List dense>
-                            {accounts.map((account) => (
-                                <ListItem key={account.id}>
-                                    <ListItemText primary={account.name} />
-                                    <ListItemSecondaryAction>
-                                        <IconButton edge="end">
-                                            <MdDelete />
-                                        </IconButton>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            ))}
-                        </List>
-                    ) : (
-                        <Typography variant="body2" color="textSecondary">
-                            No linked accounts.
+            {/* Main Content */}
+            <Box sx={{ mt: 4, textAlign: 'center' }}>
+                {user.userEmail !== '' &&
+                user.uid !== '' &&
+                user.displayName !== '' ? (
+                    <>
+                        <Typography variant="h5">
+                            {' '}
+                            {user.displayName ||
+                                'Sign in for unlocking all features'}
                         </Typography>
-                    )}
-
-                    <Divider sx={{ my: 2 }} />
-
-                    {/* Logout and Delete Account Buttons */}
-                    <Button
-                        variant="contained"
-                        color="info"
-                        fullWidth
-                        onClick={handleLogout}
-                        sx={{ mb: 1 }}
-                    >
-                        Logout
-                    </Button>
-                    <DarkOutlinedSnackbar
-                        message="Something went wrong"
-                        open={showSnack}
-                        onClose={() => setShowSnack(false)}
-                    />
-                </Box>
-            </Modal>
-        </>
+                        <Typography variant="body1">
+                            {user.userEmail}
+                        </Typography>
+                        <Box
+                            sx={{
+                                mt: 3,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 2,
+                            }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={handleDeleteAccount}
+                            >
+                                Delete Account
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                onClick={handleDisableAccount}
+                            >
+                                Disable Account
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                onClick={handleRemoveAccount}
+                            >
+                                Remove Account
+                            </Button>
+                        </Box>
+                    </>
+                ) : (
+                    <>
+                        <Typography variant="h5">Sign In</Typography>
+                        <Box
+                            sx={{
+                                mt: 3,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 2,
+                            }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={signInWithGoogle}
+                            >
+                                Sign in with Google
+                            </Button>
+                            {/* Example for another provider ("X") */}
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => console.log('Sign in with X')}
+                            >
+                                Sign in with X
+                            </Button>
+                        </Box>
+                    </>
+                )}
+            </Box>
+        </Container>
     );
 };
-
-function saveDataInLocalStorageAsJSON(details: Account, key: string) {
-    const saveDataAsJsonString = JSON.stringify(details, null, 2);
-    localStorage.setItem(key, saveDataAsJsonString);
-}
 
 export default Accounts;

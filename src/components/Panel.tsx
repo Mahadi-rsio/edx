@@ -17,7 +17,6 @@ import {
     BsPlus,
 } from 'react-icons/bs';
 import { GrUpgrade } from 'react-icons/gr';
-import Accounts from './Accounts';
 import { useNavigate } from 'react-router-dom';
 
 const Panel: React.FC<{
@@ -31,7 +30,7 @@ const Panel: React.FC<{
     const [accountExpand, setAccountExpand] = useState<boolean>(false);
     const [settingsExpand, setSettingsExpand] = useState<boolean>(false);
     const [optionsExpand, setOptionsExpand] = useState<boolean>(false);
-    const [openAccountsModal, setAccountsModal] = useState<boolean>(false);
+    //const [openAccountsModal, setAccountsModal] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const handleAccountToggle = () => {
@@ -97,7 +96,9 @@ const Panel: React.FC<{
                             </ListItemButton>
                             <ListItemButton
                                 sx={{ pl: 4 }}
-                                onClick={() => setAccountsModal(true)}
+                                onClick={() => {
+                                    navigate('/accounts');
+                                }}
                             >
                                 <BsFillPersonCheckFill />
                                 <ListItemText
@@ -151,12 +152,6 @@ const Panel: React.FC<{
                     </ListItemButton>
                 </List>
             </Drawer>
-            <Accounts
-                open={openAccountsModal}
-                handleClose={() => {
-                    setAccountsModal(false);
-                }}
-            />
         </>
     );
 };
