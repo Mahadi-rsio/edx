@@ -11,19 +11,22 @@ import {
 import {
     BsChevronDown,
     BsChevronUp,
-    BsGear,
-    BsPencil,
+    BsGearFill,
+    BsPencilFill,
     BsFillPersonCheckFill,
     BsPersonWorkspace,
-    BsPostcard,
-    BsChatDots,
-    BsBarChart,
-    BsPeople,
-    BsBook,
-    BsPersonSquare,
-    BsStar 
-    
+    BsPostcardFill,
+    BsGem,
+    BsBarChartFill,
+    BsPeopleFill,
+    BsBookFill,
+    BsBadgeAdFill,
+    BsEyeFill,
+    BsChatDotsFill,
+    BsQuestionOctagon,
 } from 'react-icons/bs';
+
+import { LuNotebookPen } from 'react-icons/lu';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -56,8 +59,7 @@ const Panel: React.FC<{
         <>
             <Drawer
                 anchor="right"
-
-                variant='temporary'
+                variant="temporary"
                 open={open}
                 onClose={setClose}
                 disableScrollLock
@@ -94,21 +96,20 @@ const Panel: React.FC<{
                     <Collapse in={accountExpand} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             <ListItemButton>
-                                <BsPencil/>
+                                <BsPencilFill />
                                 <ListItemText
                                     primary="Edit Profile"
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
                             <ListItemButton>
-                                <BsPersonSquare />
+                                <BsEyeFill />
                                 <ListItemText
                                     primary="My Profile"
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
                             <ListItemButton
-                                
                                 onClick={() => {
                                     navigate('/accounts');
                                 }}
@@ -119,25 +120,25 @@ const Panel: React.FC<{
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
-                            <ListItemButton
-                                
-                                onClick={handleSettingsToggle}
-                            >
-                                <BsGear style={{ marginRight: '8px' }} />
+                            <ListItemButton onClick={handleSettingsToggle}>
+                                <BsGearFill style={{ marginRight: '8px' }} />
                                 <ListItemText primary="Settings" />
                             </ListItemButton>
-                            <ListItemButton                            
-                                onClick={handleSettingsToggle}
-                            >
-                                <BsStar style={{ marginRight: '8px' }} />
+                            <ListItemButton onClick={handleSettingsToggle}>
+                                <BsGem style={{ marginRight: '8px' }} />
                                 <ListItemText primary="Upgrade to Pro" />
                             </ListItemButton>
- 
+
+                            <ListItemButton onClick={handleSettingsToggle}>
+                                <BsBadgeAdFill style={{ marginRight: '8px' }} />
+                                <ListItemText primary="Ads Manager" />
+                            </ListItemButton>
+
                             <Divider />
                         </List>
                     </Collapse>
                     <ListItemButton onClick={() => navigate('/create_post')}>
-                        <BsPostcard />
+                        <BsPostcardFill />
                         <ListItemText sx={{ ml: 1 }} primary="Create Post" />
                     </ListItemButton>
                     <ListItemButton onClick={handleOptionsToggle}>
@@ -145,22 +146,32 @@ const Panel: React.FC<{
                         <ListItemText sx={{ ml: 1 }} primary="Mentors" />
                     </ListItemButton>
                     <ListItemButton onClick={handleOptionsToggle}>
-                        <BsBook />
+                        <BsBookFill />
                         <ListItemText sx={{ ml: 1 }} primary="Courses" />
                     </ListItemButton>
                     <ListItemButton onClick={handleOptionsToggle}>
-                        <BsChatDots />
+                        <BsChatDotsFill />
                         <ListItemText sx={{ ml: 1 }} primary="Discussions" />
                     </ListItemButton>
                     <ListItemButton onClick={handleOptionsToggle}>
-                        <BsBarChart />
+                        <BsBarChartFill />
                         <ListItemText sx={{ ml: 1 }} primary="Leaderboard" />
                     </ListItemButton>
-                     <ListItemButton onClick={handleOptionsToggle}>
-                        <BsPeople/>
-                        <ListItemText sx={{ml:1}} primary="Groups" />
+                    <ListItemButton onClick={handleOptionsToggle}>
+                        <BsPeopleFill />
+                        <ListItemText sx={{ ml: 1 }} primary="Groups" />
                     </ListItemButton>
-
+                    <ListItemButton onClick={handleOptionsToggle}>
+                        <LuNotebookPen />
+                        <ListItemText sx={{ ml: 1 }} primary="HomeWorks" />
+                    </ListItemButton>
+                    <ListItemButton onClick={handleOptionsToggle}>
+                        <BsQuestionOctagon />
+                        <ListItemText
+                            sx={{ ml: 1 }}
+                            primary="Ask Your Doughts "
+                        />
+                    </ListItemButton>
                 </List>
             </Drawer>
         </>
