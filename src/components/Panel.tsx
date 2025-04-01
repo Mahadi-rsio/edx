@@ -6,6 +6,7 @@ import {
     Collapse,
     ListItemButton,
     Divider,
+    Avatar,
 } from '@mui/material';
 import {
     BsChevronDown,
@@ -13,10 +14,17 @@ import {
     BsGear,
     BsPencil,
     BsFillPersonCheckFill,
-    BsPersonCircle,
-    BsPlus,
+    BsPersonWorkspace,
+    BsPostcard,
+    BsChatDots,
+    BsBarChart,
+    BsPeople,
+    BsBook,
+    BsPersonSquare,
+    BsStar 
+    
 } from 'react-icons/bs';
-import { GrUpgrade } from 'react-icons/gr';
+
 import { useNavigate } from 'react-router-dom';
 
 const Panel: React.FC<{
@@ -48,6 +56,8 @@ const Panel: React.FC<{
         <>
             <Drawer
                 anchor="right"
+
+                variant='temporary'
                 open={open}
                 onClose={setClose}
                 disableScrollLock
@@ -68,34 +78,37 @@ const Panel: React.FC<{
                 <List sx={{ scrollBehavior: 'smooth' }}>
                     {/* User Account Section */}
                     <ListItemButton onClick={handleAccountToggle}>
-                        <BsPersonCircle
-                            style={{ marginRight: '8px', fontSize: '1.5rem' }}
-                        />
+                        <Avatar src="" alt="h" sx={{ width: 30, height: 30 }}>
+                            {userName[0]}
+                        </Avatar>
                         <ListItemText
                             primary={userName}
                             secondary={userEmail}
+                            sx={{ ml: 1 }}
                         />
                         {accountExpand ? <BsChevronUp /> : <BsChevronDown />}
                     </ListItemButton>
+
                     <Divider />
+
                     <Collapse in={accountExpand} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <GrUpgrade />
-                                <ListItemText
-                                    primary="Upgrade to Pro"
-                                    sx={{ ml: 1 }}
-                                />
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <BsPencil />
+                            <ListItemButton>
+                                <BsPencil/>
                                 <ListItemText
                                     primary="Edit Profile"
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
+                            <ListItemButton>
+                                <BsPersonSquare />
+                                <ListItemText
+                                    primary="My Profile"
+                                    sx={{ ml: 1 }}
+                                />
+                            </ListItemButton>
                             <ListItemButton
-                                sx={{ pl: 4 }}
+                                
                                 onClick={() => {
                                     navigate('/accounts');
                                 }}
@@ -106,50 +119,48 @@ const Panel: React.FC<{
                                     sx={{ ml: 1 }}
                                 />
                             </ListItemButton>
+                            <ListItemButton
+                                
+                                onClick={handleSettingsToggle}
+                            >
+                                <BsGear style={{ marginRight: '8px' }} />
+                                <ListItemText primary="Settings" />
+                            </ListItemButton>
+                            <ListItemButton                            
+                                onClick={handleSettingsToggle}
+                            >
+                                <BsStar style={{ marginRight: '8px' }} />
+                                <ListItemText primary="Upgrade to Pro" />
+                            </ListItemButton>
+ 
+                            <Divider />
                         </List>
                     </Collapse>
-
-                    {/* Settings Section */}
-                    <ListItemButton onClick={handleSettingsToggle}>
-                        <BsGear style={{ marginRight: '8px' }} />
-                        <ListItemText primary="Settings" />
-                        {settingsExpand ? <BsChevronUp /> : <BsChevronDown />}
-                    </ListItemButton>
-                    <Collapse in={settingsExpand} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="General" />
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Privacy" />
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Password" />
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
-
-                    {/* Expandable Options Section */}
-                    <ListItemButton onClick={handleOptionsToggle}>
-                        <ListItemText primary="Groups" />
-                        {optionsExpand ? <BsChevronUp /> : <BsChevronDown />}
-                    </ListItemButton>
-                    <Collapse in={optionsExpand} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Create Group" />
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Your Groups" />
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
-
-                    {/* Additional Non-Clickable Item */}
                     <ListItemButton onClick={() => navigate('/create_post')}>
-                        <BsPlus />
-                        <ListItemText primary="Create Post" />
+                        <BsPostcard />
+                        <ListItemText sx={{ ml: 1 }} primary="Create Post" />
                     </ListItemButton>
+                    <ListItemButton onClick={handleOptionsToggle}>
+                        <BsPersonWorkspace />
+                        <ListItemText sx={{ ml: 1 }} primary="Mentors" />
+                    </ListItemButton>
+                    <ListItemButton onClick={handleOptionsToggle}>
+                        <BsBook />
+                        <ListItemText sx={{ ml: 1 }} primary="Courses" />
+                    </ListItemButton>
+                    <ListItemButton onClick={handleOptionsToggle}>
+                        <BsChatDots />
+                        <ListItemText sx={{ ml: 1 }} primary="Discussions" />
+                    </ListItemButton>
+                    <ListItemButton onClick={handleOptionsToggle}>
+                        <BsBarChart />
+                        <ListItemText sx={{ ml: 1 }} primary="Leaderboard" />
+                    </ListItemButton>
+                     <ListItemButton onClick={handleOptionsToggle}>
+                        <BsPeople/>
+                        <ListItemText sx={{ml:1}} primary="Groups" />
+                    </ListItemButton>
+
                 </List>
             </Drawer>
         </>
