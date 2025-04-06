@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useState, KeyboardEvent, useEffect } from 'react';
 import {
     Box,
     Button,
@@ -8,15 +8,22 @@ import {
     Typography,
     CircularProgress,
     Alert,
+    AppBar,
+    Toolbar,
+    IconButton,
+    
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { db } from './../ts/app';
+import { db,auth } from './../ts/app';
 import { collection, addDoc } from 'firebase/firestore';
 import { DarkOutlinedSnackbar } from './Utils';
+import { BsArrowLeft} from 'react-icons/bs'
+import { onAuthStateChanged} from 'firebase/auth'
 
 const CreatePost: React.FC = () => {
     // Rename "heading" to represent the username for clarity.
     const [username, setUsername] = useState('');
+    const [title,setTitle] = useState('')
     const [content, setContent] = useState('');
     const [tagInput, setTagInput] = useState('');
     const [tags, setTags] = useState<string[]>([]);
@@ -36,18 +43,27 @@ const CreatePost: React.FC = () => {
         }
     };
 
+    useEffect(()=>{
+        onAuthStateChanged(auth,user=>{
+            setUsername(user?.displayName? user.displayName :'')
+        })
+    })
+
     const handleDeleteTag = (tagToDelete: string) => {
         setTags(tags.filter((tag) => tag !== tagToDelete));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+       
         setLoading(true);
 
         // Construct the post data according to what PostContainer expects.
         const postData = {
             userName: username, // mapping the username input
-            content, // the main post content
+            content, 
+            title : title,
             likeCount: 0, // default value for likes
             commentCount: 0, // default value for comments
             tags, // will be read as hashtags in PostContainer
@@ -78,6 +94,19 @@ const CreatePost: React.FC = () => {
     };
 
     return (
+        <>
+   <AppBar position="static">
+      <Toolbar>
+        <IconButton edge="start" color="inherit" onClick={() => navigate(-1)}>
+          <BsArrowLeft size={18}/>
+        </IconButton>
+        <Typography
+            variant="body1"
+            sx={{ flexGrow: 1, textAlign: "center"}}>
+          Create New Post
+        </Typography>
+      </Toolbar>
+    </AppBar>
         <Box
             component="form"
             onSubmit={handleSubmit}
@@ -91,15 +120,12 @@ const CreatePost: React.FC = () => {
                 padding: 2,
             }}
         >
-            <Typography variant="h4" component="h1">
-                Create Post
-            </Typography>
-            <TextField
-                label="Username"
+           <TextField
+                label="Add Title"
                 variant="outlined"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                
             />
             <TextField
                 label="Content"
@@ -108,7 +134,7 @@ const CreatePost: React.FC = () => {
                 rows={4}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                required
+                
             />
             <TextField
                 label="Add Tag"
@@ -146,7 +172,13 @@ const CreatePost: React.FC = () => {
                 onClose={() => setSnackbarOpen(false)}
             />
         </Box>
+        </>
     );
 };
 
 export default CreatePost;
+
+
+
+
+

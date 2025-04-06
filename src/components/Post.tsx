@@ -58,6 +58,7 @@ const Post: React.FC<FacebookPostProps> = ({
     likeCount = 0,
     commentCount = 0,
     shareCount = 0,
+    title
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
