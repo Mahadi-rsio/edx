@@ -45,6 +45,7 @@ export interface FacebookPostProps {
     likeCount?: number;
     commentCount?: number;
     shareCount?: number;
+    title:string;
 }
 
 const Post: React.FC<FacebookPostProps> = ({
@@ -129,6 +130,7 @@ const Post: React.FC<FacebookPostProps> = ({
                             },
                         }}
                     >
+                        <Typography variant='h6'>{title}</Typography>
                         <Typography variant="body1">{content}</Typography>
                     </Box>
                     {hashtags.length > 0 && (
@@ -217,9 +219,8 @@ const Post: React.FC<FacebookPostProps> = ({
                     <List>
                         <ListItemButton
                             onClick={() => {
-                                /* Handle edit action here */ setDrawerOpen(
-                                    false,
-                                );
+                                /* Handle edit action here */ 
+                                navigate('/edit_post/'+postId) 
                             }}
                         >
                             <ListItemIcon>

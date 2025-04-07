@@ -8,6 +8,7 @@ const CreatePost = lazy(() => import('./components/CreatePost.tsx'));
 const Test = lazy(() => import('./components/Test.tsx'));
 const EditProfile = lazy(() => import('./components/EditProfile.tsx'));
 const Accounts = lazy(() => import('./components/Accounts.tsx'));
+const EditPost = lazy(()=>import('./components/EditPost.tsx'))
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function App() {
                     <Route path="/test" element={<Test />} />
                     <Route path="/edit_profile" element={<EditProfile />} />
                     <Route path="/accounts" element={<Accounts />} />
+                    <Route path='/edit_post/:postId' element={<EditPost/>}/>
                 </Routes>
             </Suspense>
         </Router>

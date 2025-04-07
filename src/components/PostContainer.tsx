@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     collection,
@@ -24,9 +27,10 @@ interface PostData {
     tags?: string[];
     avatarUrl?: string;
     imageUrl?: string;
+    title: string;
 }
 
-const POSTS_BATCH_SIZE = 2;
+const POSTS_BATCH_SIZE = 5;
 
 const PostContainer: React.FC = () => {
     const [posts, setPosts] = useState<PostData[]>([]);
@@ -35,8 +39,9 @@ const PostContainer: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     // To keep track of the last visible document for pagination
-    const lastVisibleDocRef =
-        useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
+    const lastVisibleDocRef = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
+    // Ref to ensure initial fetch only runs once
+    const didFetchRef = useRef(false);
 
     const fetchPosts = async () => {
         if (loading) return;
@@ -65,8 +70,7 @@ const PostContainer: React.FC = () => {
             })) as PostData[];
 
             if (snapshot.docs.length > 0) {
-                lastVisibleDocRef.current =
-                    snapshot.docs[snapshot.docs.length - 1];
+                lastVisibleDocRef.current = snapshot.docs[snapshot.docs.length - 1];
             }
             // If fewer posts were returned than expected, there are no more posts
             if (snapshot.docs.length < POSTS_BATCH_SIZE) {
@@ -97,9 +101,12 @@ const PostContainer: React.FC = () => {
         [loading, hasMore],
     );
 
-    // Initial fetch
+    // Initial fetch: only run once (even if Strict Mode mounts twice)
     useEffect(() => {
-        fetchPosts();
+        if (!didFetchRef.current) {
+            fetchPosts();
+            didFetchRef.current = true;
+        }
         // Clean up the observer on unmount
         return () => {
             if (observer.current) observer.current.disconnect();
@@ -126,6 +133,7 @@ const PostContainer: React.FC = () => {
             )}
             {/* Render posts */}
             {posts.map((post, index) => {
+                // Attach the lastPostRef to the last post wrapper
                 if (index === posts.length - 1) {
                     return (
                         <div ref={lastPostRef} key={post.id}>
@@ -136,15 +144,14 @@ const PostContainer: React.FC = () => {
                                 content={post.content}
                                 timestamp={
                                     post.timestamp
-                                        ? new Date(
-                                              post.timestamp,
-                                          ).toLocaleDateString()
+                                        ? new Date(post.timestamp).toLocaleDateString()
                                         : ''
                                 }
                                 commentCount={post.commentCount || 0}
                                 hashtags={post.tags || []}
                                 avatarUrl={post.avatarUrl || ''}
                                 imageUrl={post.imageUrl || ''}
+                                title={post.title || ''}
                             />
                         </div>
                     );
@@ -165,6 +172,7 @@ const PostContainer: React.FC = () => {
                         hashtags={post.tags || []}
                         avatarUrl={post.avatarUrl || ''}
                         imageUrl={post.imageUrl || ''}
+                        title={post.title || ''}
                     />
                 );
             })}
