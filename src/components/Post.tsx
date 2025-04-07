@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Card,
@@ -34,6 +34,9 @@ import {
     BsFacebook,
 } from 'react-icons/bs';
 
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '../ts/app';
+
 export interface FacebookPostProps {
     postId: string;
     avatarUrl: string;
@@ -59,7 +62,8 @@ const Post: React.FC<FacebookPostProps> = ({
     likeCount = 0,
     commentCount = 0,
     shareCount = 0,
-    title
+    title,
+    
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -75,6 +79,16 @@ const Post: React.FC<FacebookPostProps> = ({
     const toggleDrawer = (open: boolean) => () => {
         setDrawerOpen(open);
     };
+    const [isLogged, setLogged] = useState<boolean>(false);
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setLogged(true);
+                 }
+        });
+    }, []);
+
 
     return (
         <>
@@ -217,9 +231,8 @@ const Post: React.FC<FacebookPostProps> = ({
                     }}
                 >
                     <List>
-                        <ListItemButton
+                        {isLogged? <ListItemButton
                             onClick={() => {
-                                /* Handle edit action here */ 
                                 navigate('/edit_post/'+postId) 
                             }}
                         >
@@ -227,19 +240,20 @@ const Post: React.FC<FacebookPostProps> = ({
                                 <BsPencilSquare size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Edit post" />
-                        </ListItemButton>
-                        <ListItemButton
+                        </ListItemButton> : ''}
+                        { isLogged? <ListItemButton
                             onClick={() => {
                                 /* Handle delete action here */ setDrawerOpen(
                                     false,
                                 );
                             }}
                         >
+                            
                             <ListItemIcon>
                                 <BsTrash size={20} />
                             </ListItemIcon>
                             <ListItemText primary="Delete this post" />
-                        </ListItemButton>
+                        </ListItemButton>: ''}
                         <ListItemButton
                             onClick={() => {
                                 /* Handle report action here */ setDrawerOpen(

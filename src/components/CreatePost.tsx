@@ -28,7 +28,7 @@ const CreatePost: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [errorAlert, setErrorAlert] = useState('');
-
+    const [userId,setUserId] = useState('')
     const navigate = useNavigate();
 
     const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -44,6 +44,7 @@ const CreatePost: React.FC = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUsername(user?.displayName || '');
+            setUserId(user?.uid || '')
         });
         // Cleanup the listener on unmount
         return () => unsubscribe();
@@ -58,6 +59,7 @@ const CreatePost: React.FC = () => {
         setLoading(true);
 
         const postData = {
+            uid:userId,
             userName: username,
             content,
             title: title,

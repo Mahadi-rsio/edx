@@ -1,8 +1,7 @@
 
-
 import React, { useState, KeyboardEvent, useEffect } from 'react';
 import {
-  Box,
+Box,
   Button,
   TextField,
   Chip,
@@ -24,6 +23,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 const EditPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const [username, setUsername] = useState('');
+  const [userUID, setUserUID] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tagInput, setTagInput] = useState('');
@@ -45,23 +45,34 @@ const EditPost: React.FC = () => {
   };
 
   useEffect(() => {
-    // Set the username from auth state.
+    // Set the username and user UID from auth state.
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUsername(user?.displayName || '');
+      if (user) {
+        setUsername(user.displayName || '');
+        setUserUID(user.uid);
+      } else {
+        setUsername('');
+        setUserUID('');
+      }
     });
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    // Fetch the existing post data to prefill the form.
+    // Fetch the existing post data once postId and userUID are available.
     const fetchPostData = async () => {
-      if (postId) {
+      if (postId && userUID) {
         setLoading(true);
         try {
           const postDocRef = doc(db, 'posts', postId);
           const postSnap = await getDoc(postDocRef);
           if (postSnap.exists()) {
             const data = postSnap.data();
+            // Check if the current user's UID matches the post's UID.
+            if (data.uid !== userUID) {
+              setErrorAlert('You are not authorized to edit this post.');
+              return;
+            }
             setTitle(data.title || '');
             setContent(data.content || '');
             setTags(data.tags || []);
@@ -77,7 +88,7 @@ const EditPost: React.FC = () => {
       }
     };
     fetchPostData();
-  }, [postId]);
+  }, [postId, userUID]);
 
   const handleDeleteTag = (tagToDelete: string) => {
     setTags(tags.filter((tag) => tag !== tagToDelete));
@@ -97,7 +108,6 @@ const EditPost: React.FC = () => {
       title,
       content,
       tags,
-      // Optionally update the timestamp if desired
       timestamp: new Date().getTime(),
     };
 
@@ -130,58 +140,67 @@ const EditPost: React.FC = () => {
         </Toolbar>
       </AppBar>
       <Box
-        component="form"
-        onSubmit={handleSubmit}
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
           width: '100%',
           maxWidth: 600,
           margin: 'auto',
           padding: 2,
+          mt: 2,
         }}
       >
-        <TextField
-          label="Edit Title"
-          variant="outlined"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <TextField
-          label="Edit Content"
-          variant="outlined"
-          multiline
-          rows={4}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <TextField
-          label="Add Tag"
-          variant="outlined"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-          onKeyDown={handleAddTag}
-          helperText="Press Enter to add a tag"
-        />
-        <Stack direction="row" spacing={1} flexWrap="wrap">
-          {tags.map((tag, index) => (
-            <Chip key={index} label={tag} onDelete={() => handleDeleteTag(tag)} />
-          ))}
-        </Stack>
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={loading}
-          sx={{ position: 'relative', height: 36 }}
-        >
-          {loading ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : (
-            'Update Post'
-          )}
-        </Button>
-        {errorAlert && <Alert severity="error">{errorAlert}</Alert>}
+        {errorAlert ? (
+          <Alert severity="error">{errorAlert}</Alert>
+        ) : (
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}
+          >
+            <TextField
+              label="Edit Title"
+              variant="outlined"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <TextField
+              label="Edit Content"
+              variant="outlined"
+              multiline
+              rows={4}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+            <TextField
+              label="Add Tag"
+              variant="outlined"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleAddTag}
+              helperText="Press Enter to add a tag"
+            />
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              {tags.map((tag, index) => (
+                <Chip key={index} label={tag} onDelete={() => handleDeleteTag(tag)} />
+              ))}
+            </Stack>
+            <Button
+              variant="contained"
+              type="submit"
+              disabled={loading}
+              sx={{ position: 'relative', height: 36 }}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Update Post'
+              )}
+            </Button>
+          </Box>
+        )}
         <DarkOutlinedSnackbar
           message="Post Updated Successfully"
           open={snackbarOpen}
