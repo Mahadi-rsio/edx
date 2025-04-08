@@ -1,26 +1,13 @@
-function saveDataInLocalStorageAsJSON(details: object, key: string) {
-    const saveDataAsJsonString = JSON.stringify(details, null, 2);
-    localStorage.setItem(key, saveDataAsJsonString);
-}
-
-function getDataFromLocalStorageAsJSON(key: string) {
-    const storedJsonData = localStorage.getItem(key);
-    const extractedDataFromLocalStorage = JSON.parse(
-        storedJsonData ? storedJsonData : '',
-    );
-    return extractedDataFromLocalStorage;
-}
+import ConfirmationModal from './Modal';
 
 export default function Test() {
-    saveDataInLocalStorageAsJSON(
-        {
-            name: 'mahadi',
-            email: 'rtrt',
-        },
-        'mydata',
+    return (
+        <ConfirmationModal
+            title={'are you sure?'}
+            description={'You cannot retrive data if once you delet'}
+            onCancel={() => alert('hahah')}
+            onConfirm={() => alert('ghsdgah')}
+            open={true}
+        />
     );
-
-    const data = getDataFromLocalStorageAsJSON('mydata');
-
-    return <div>Hello world {data.name}</div>;
 }

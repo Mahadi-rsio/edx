@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Card,
@@ -34,8 +34,10 @@ import {
     BsFacebook,
 } from 'react-icons/bs';
 
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '../ts/app';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../ts/app';
+import ConfirmationModal from './Modal';
+import { doc, deleteDoc } from 'firebase/firestore';
 
 export interface FacebookPostProps {
     postId: string;
@@ -48,7 +50,8 @@ export interface FacebookPostProps {
     likeCount?: number;
     commentCount?: number;
     shareCount?: number;
-    title:string;
+    title: string;
+    uid: string;
 }
 
 const Post: React.FC<FacebookPostProps> = ({
@@ -63,12 +66,15 @@ const Post: React.FC<FacebookPostProps> = ({
     commentCount = 0,
     shareCount = 0,
     title,
-    
+    uid,
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [isLogged, setLogged] = useState<boolean>(false);
+    const [currentUserUid, setCurrentUserUid] = useState<string | null>(null);
+    const [openConfirm, setOpenConfirm] = useState(false);
 
     // Define a threshold for content length to determine if scroll should be enabled.
     const contentThreshold = 300;
@@ -76,19 +82,31 @@ const Post: React.FC<FacebookPostProps> = ({
 
     const navigate = useNavigate();
 
+    const deletPost = async () => {
+        try {
+            await deleteDoc(doc(db, 'posts', postId));
+            setOpenConfirm(false);
+            setDrawerOpen(false);
+        } catch (e) {
+            alert(e);
+        }
+    };
+
     const toggleDrawer = (open: boolean) => () => {
         setDrawerOpen(open);
     };
-    const [isLogged, setLogged] = useState<boolean>(false);
 
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 setLogged(true);
-                 }
+                setCurrentUserUid(user.uid);
+            } else {
+                setLogged(false);
+                setCurrentUserUid(null);
+            }
         });
     }, []);
-
 
     return (
         <>
@@ -144,7 +162,7 @@ const Post: React.FC<FacebookPostProps> = ({
                             },
                         }}
                     >
-                        <Typography variant='h6'>{title}</Typography>
+                        <Typography variant="h6">{title}</Typography>
                         <Typography variant="body1">{content}</Typography>
                     </Box>
                     {hashtags.length > 0 && (
@@ -231,34 +249,35 @@ const Post: React.FC<FacebookPostProps> = ({
                     }}
                 >
                     <List>
-                        {isLogged? <ListItemButton
-                            onClick={() => {
-                                navigate('/edit_post/'+postId) 
-                            }}
-                        >
-                            <ListItemIcon>
-                                <BsPencilSquare size={20} />
-                            </ListItemIcon>
-                            <ListItemText primary="Edit post" />
-                        </ListItemButton> : ''}
-                        { isLogged? <ListItemButton
-                            onClick={() => {
-                                /* Handle delete action here */ setDrawerOpen(
-                                    false,
-                                );
-                            }}
-                        >
-                            
-                            <ListItemIcon>
-                                <BsTrash size={20} />
-                            </ListItemIcon>
-                            <ListItemText primary="Delete this post" />
-                        </ListItemButton>: ''}
+                        {isLogged && currentUserUid === uid && (
+                            <>
+                                <ListItemButton
+                                    onClick={() => {
+                                        navigate('/edit_post/' + postId);
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <BsPencilSquare size={20} />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Edit post" />
+                                </ListItemButton>
+                                <ListItemButton
+                                    onClick={() => {
+                                        // Handle delete action here
+                                        setOpenConfirm(true);
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <BsTrash size={20} />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Delete this post" />
+                                </ListItemButton>
+                            </>
+                        )}
                         <ListItemButton
                             onClick={() => {
-                                /* Handle report action here */ setDrawerOpen(
-                                    false,
-                                );
+                                // Handle report action here
+                                setDrawerOpen(false);
                             }}
                         >
                             <ListItemIcon>
@@ -268,9 +287,8 @@ const Post: React.FC<FacebookPostProps> = ({
                         </ListItemButton>
                         <ListItemButton
                             onClick={() => {
-                                /* Handle save action here */ setDrawerOpen(
-                                    false,
-                                );
+                                // Handle save action here
+                                setDrawerOpen(false);
                             }}
                         >
                             <ListItemIcon>
@@ -280,9 +298,8 @@ const Post: React.FC<FacebookPostProps> = ({
                         </ListItemButton>
                         <ListItemButton
                             onClick={() => {
-                                /* Handle not interested action here */ setDrawerOpen(
-                                    false,
-                                );
+                                // Handle not interested action here
+                                setDrawerOpen(false);
                             }}
                         >
                             <ListItemIcon>
@@ -299,6 +316,14 @@ const Post: React.FC<FacebookPostProps> = ({
                     </List>
                 </Box>
             </Drawer>
+            <ConfirmationModal
+                onConfirm={deletPost}
+                title="Delete Post"
+                description="Sure to delete post ? if deleted data cannot be back again !"
+                cancelText="No,Keep"
+                onCancel={() => setOpenConfirm(false)}
+                open={openConfirm}
+            />
         </>
     );
 };

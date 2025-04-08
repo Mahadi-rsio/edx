@@ -28,7 +28,7 @@ const CreatePost: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [errorAlert, setErrorAlert] = useState('');
-    const [userId,setUserId] = useState('')
+    const [userId, setUserId] = useState('');
     const navigate = useNavigate();
 
     const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -44,7 +44,7 @@ const CreatePost: React.FC = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUsername(user?.displayName || '');
-            setUserId(user?.uid || '')
+            setUserId(user?.uid || '');
         });
         // Cleanup the listener on unmount
         return () => unsubscribe();
@@ -59,7 +59,7 @@ const CreatePost: React.FC = () => {
         setLoading(true);
 
         const postData = {
-            uid:userId,
+            uid: userId,
             userName: username,
             content,
             title: title,
@@ -95,10 +95,17 @@ const CreatePost: React.FC = () => {
         <>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={() => navigate(-1)}>
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={() => navigate(-1)}
+                    >
                         <BsArrowLeft size={18} />
                     </IconButton>
-                    <Typography variant="body1" sx={{ flexGrow: 1, textAlign: "center" }}>
+                    <Typography
+                        variant="body1"
+                        sx={{ flexGrow: 1, textAlign: 'center' }}
+                    >
                         Create New Post
                     </Typography>
                 </Toolbar>
