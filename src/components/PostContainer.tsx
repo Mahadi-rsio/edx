@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     collection,
@@ -53,13 +54,13 @@ const PostContainer: React.FC = () => {
                     collection(db, 'posts'),
                     orderBy('timestamp', 'desc'),
                     startAfter(lastVisibleDocRef.current),
-                    limit(POSTS_BATCH_SIZE),
+                    limit(POSTS_BATCH_SIZE)
                 );
             } else {
                 postsQuery = query(
                     collection(db, 'posts'),
                     orderBy('timestamp', 'desc'),
-                    limit(POSTS_BATCH_SIZE),
+                    limit(POSTS_BATCH_SIZE)
                 );
             }
             const snapshot = await getDocs(postsQuery);
@@ -69,8 +70,7 @@ const PostContainer: React.FC = () => {
             })) as PostData[];
 
             if (snapshot.docs.length > 0) {
-                lastVisibleDocRef.current =
-                    snapshot.docs[snapshot.docs.length - 1];
+                lastVisibleDocRef.current = snapshot.docs[snapshot.docs.length - 1];
             }
             // If fewer posts were returned than expected, there are no more posts
             if (snapshot.docs.length < POSTS_BATCH_SIZE) {
@@ -83,6 +83,11 @@ const PostContainer: React.FC = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Callback to remove a post from state after deletion
+    const handlePostDelete = (deletedPostId: string) => {
+        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== deletedPostId));
     };
 
     // IntersectionObserver for infinite scroll
@@ -98,7 +103,7 @@ const PostContainer: React.FC = () => {
             });
             if (node) observer.current.observe(node);
         },
-        [loading, hasMore],
+        [loading, hasMore]
     );
 
     // Initial fetch: only run once (even if Strict Mode mounts twice)
@@ -113,7 +118,6 @@ const PostContainer: React.FC = () => {
         };
     }, []);
 
-    // Common centered style
     const centerStyle: React.CSSProperties = {
         display: 'flex',
         justifyContent: 'center',
@@ -125,15 +129,12 @@ const PostContainer: React.FC = () => {
     return (
         <>
             <GroupSuggetion />
-            {/* When there are no posts after initial load */}
             {posts.length === 0 && !loading && !error && (
                 <div style={centerStyle}>
                     <p style={{ fontSize: '0.9rem' }}>No posts available</p>
                 </div>
             )}
-            {/* Render posts */}
             {posts.map((post, index) => {
-                // Attach the lastPostRef to the last post wrapper
                 if (index === posts.length - 1) {
                     return (
                         <div ref={lastPostRef} key={post.id}>
@@ -144,9 +145,7 @@ const PostContainer: React.FC = () => {
                                 content={post.content}
                                 timestamp={
                                     post.timestamp
-                                        ? new Date(
-                                              post.timestamp,
-                                          ).toLocaleDateString()
+                                        ? new Date(post.timestamp).toLocaleDateString()
                                         : ''
                                 }
                                 commentCount={post.commentCount || 0}
@@ -155,6 +154,7 @@ const PostContainer: React.FC = () => {
                                 imageUrl={post.imageUrl || ''}
                                 title={post.title || ''}
                                 uid={post.uid || ''}
+                                onPostDelete={handlePostDelete}
                             />
                         </div>
                     );
@@ -177,32 +177,25 @@ const PostContainer: React.FC = () => {
                         imageUrl={post.imageUrl || ''}
                         title={post.title || ''}
                         uid={post.uid || ''}
+                        onPostDelete={handlePostDelete}
                     />
                 );
             })}
-            {/* Loading indicator */}
             {loading && (
                 <div style={centerStyle}>
                     <CircularProgress size={24} />
                 </div>
             )}
-            {/* Error message with retry option */}
             {error && (
                 <div style={centerStyle}>
                     <Typography color="error" sx={{ mt: 1 }}>
                         Something went wrong
                     </Typography>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={fetchPosts}
-                        sx={{ mt: 2 }}
-                    >
+                    <Button variant="contained" color="primary" onClick={fetchPosts} sx={{ mt: 2 }}>
                         Retry
                     </Button>
                 </div>
             )}
-            {/* Display "No more posts" only if there are already some posts */}
             {!hasMore && posts.length > 0 && !loading && (
                 <div style={centerStyle}>
                     <p style={{ fontSize: '0.9rem' }}>No more posts</p>
