@@ -22,7 +22,6 @@ interface User {
     displayName: string;
 }
 
-
 const Accounts = () => {
     const [user, setUser] = useState<User>({
         userEmail: '',
@@ -34,15 +33,12 @@ const Accounts = () => {
     const [openModal, setOpenModal] = useState(false);
     // Listen to authentication state changes
 
-
-const signout = () => {
-    auth.signOut().then(() => {
-        console.log('User signed out.');
-        setOpenModal(true);        
-    });
-}
-
-
+    const signout = () => {
+        auth.signOut().then(() => {
+            console.log('User signed out.');
+            setOpenModal(true);
+        });
+    };
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
@@ -145,8 +141,6 @@ const signout = () => {
                 open={openModal}
                 description="Are you sure you want to sign out?"
                 onCancel={() => setOpenModal(false)}
-                   
-                
                 onConfirm={() => {
                     setOpenModal(false);
                     auth.signOut();
@@ -155,8 +149,7 @@ const signout = () => {
                     window.location.reload();
                 }}
             />
-        </>    
-        
+        </>
     );
 };
 

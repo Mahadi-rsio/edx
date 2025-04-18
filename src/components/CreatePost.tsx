@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { db, auth } from './../ts/app';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { DarkOutlinedSnackbar } from './Utils';
 import {
     BsArrowLeft,
@@ -46,6 +46,16 @@ const CreatePost: React.FC = () => {
     const [pollOptionInput, setPollOptionInput] = useState('');
     const navigate = useNavigate();
 
+    // Set username and userId based on auth state
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setUsername(user?.displayName || '');
+            setUserId(user?.uid || '');
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // Handle adding tags
     const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && tagInput.trim() !== '') {
             e.preventDefault();
@@ -56,23 +66,58 @@ const CreatePost: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUsername(user?.displayName || '');
-            setUserId(user?.uid || '');
-        });
-        // Cleanup the listener on unmount
-        return () => unsubscribe();
-    }, []);
-
+    // Handle deleting tags
     const handleDeleteTag = (tagToDelete: string) => {
         setTags(tags.filter((tag) => tag !== tagToDelete));
     };
 
+    // Handle adding poll options
+    const handleAddPollOption = () => {
+        if (pollOptionInput.trim() !== '' && !pollOptions.includes(pollOptionInput.trim())) {
+            setPollOptions([...pollOptions, pollOptionInput.trim()]);
+            setPollOptionInput('');
+        }
+    };
+
+    // Handle deleting poll options
+    const handleDeletePollOption = (optionToDelete: string) => {
+        setPollOptions(pollOptions.filter((option) => option !== optionToDelete));
+    };
+
+    // Handle form submission to Firestore
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setErrorAlert('');
 
+        // Validation
+        if (!title.trim()) {
+            setErrorAlert('Please enter a title.');
+            setLoading(false);
+            return;
+        }
+        if (!content.trim()) {
+            setErrorAlert('Please enter content.');
+            setLoading(false);
+            return;
+        }
+        if (!selectedCategory) {
+            setErrorAlert('Please select a category.');
+            setLoading(false);
+            return;
+        }
+        if (!visibility) {
+            setErrorAlert('Please select visibility.');
+            setLoading(false);
+            return;
+        }
+        if (selectedCategory === 'Poll_Post' && pollOptions.length < 2) {
+            setErrorAlert('Please add at least two poll options.');
+            setLoading(false);
+            return;
+        }
+
+        // Prepare post data for Firestore
         const postData = {
             uid: userId,
             userName: username,
@@ -80,36 +125,30 @@ const CreatePost: React.FC = () => {
             title,
             url,
             tags,
-            category: selectedCategory,
-            visibility,
+            category: selectedCategory, // Stores category (News_Feed, Review_Post, Poll_Post)
+            visibility, // Stores visibility (Group, Public, Only_Me)
             likeCount: 0,
             commentCount: 0,
             avatarUrl: '',
             imageUrl: '',
-            timestamp: new Date().getDate(),
-            pollOptions: [] as string[],
+            timestamp: serverTimestamp(), // Firestore server timestamp
+            pollOptions: selectedCategory === 'Poll_Post' ? pollOptions : [], // Stores poll options for Poll_Post
         };
-
-        if (selectedCategory === 'Poll_Post' && pollOptions.length === 0) {
-            setErrorAlert('Please add at least one poll option.');
-            setLoading(false);
-            return;
-        }
-
-        if (selectedCategory === 'Poll_Post') {
-            postData.pollOptions = pollOptions;
-        }
 
         try {
             await addDoc(collection(db, 'posts'), postData);
             setSnackbarOpen(true);
-            setUsername('');
+            // Reset form fields
+            setTitle('');
             setContent('');
             setTags([]);
             setPollOptions([]);
+            setSelectedCategory('');
+            setVisibility('');
+            setUrl('');
             setErrorAlert('');
 
-            // Redirect to home after a delay (e.g., 2 seconds)
+            // Navigate to home after 2 seconds
             setTimeout(() => {
                 navigate('/');
             }, 2000);
@@ -121,34 +160,14 @@ const CreatePost: React.FC = () => {
         }
     };
 
-    const handleAddPollOption = () => {
-        if (pollOptionInput.trim() !== '') {
-            setPollOptions([...pollOptions, pollOptionInput.trim()]);
-            setPollOptionInput('');
-        }
-    };
-
-    const handleDeletePollOption = (optionToDelete: string) => {
-        setPollOptions(
-            pollOptions.filter((option) => option !== optionToDelete),
-        );
-    };
-
     return (
         <>
             <AppBar position="sticky">
                 <Toolbar>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        onClick={() => navigate(-1)}
-                    >
+                    <IconButton edge="start" color="inherit" onClick={() => navigate(-1)}>
                         <BsArrowLeft size={18} />
                     </IconButton>
-                    <Typography
-                        variant="body1"
-                        sx={{ flexGrow: 1, textAlign: 'center' }}
-                    >
+                    <Typography variant="body1" sx={{ flexGrow: 1, textAlign: 'center' }}>
                         Create New Post
                     </Typography>
                 </Toolbar>
@@ -171,6 +190,7 @@ const CreatePost: React.FC = () => {
                     variant="outlined"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    required
                 />
                 <TextField
                     label="Content"
@@ -179,6 +199,7 @@ const CreatePost: React.FC = () => {
                     rows={4}
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
+                    required
                 />
                 <TextField
                     label="URL"
@@ -207,34 +228,16 @@ const CreatePost: React.FC = () => {
                     displayEmpty
                     sx={{ width: '100%', marginBottom: 1 }}
                 >
-                    <MenuItem
-                        value="News_Feed"
-                        style={{
-                            padding: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
+                    <MenuItem value="" disabled>
+                        Select Category
+                    </MenuItem>
+                    <MenuItem value="News_Feed">
                         <BsNewspaper style={{ marginRight: '5px' }} /> News Feed
                     </MenuItem>
-                    <MenuItem
-                        value="Review_Post"
-                        style={{
-                            padding: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
+                    <MenuItem value="Review_Post">
                         <BsStar style={{ marginRight: '5px' }} /> Review Post
                     </MenuItem>
-                    <MenuItem
-                        value="Poll_Post"
-                        style={{
-                            padding: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
+                    <MenuItem value="Poll_Post">
                         <BsBarChart style={{ marginRight: '5px' }} /> Poll Post
                     </MenuItem>
                 </Select>
@@ -250,34 +253,16 @@ const CreatePost: React.FC = () => {
                     displayEmpty
                     sx={{ width: '100%', marginBottom: 2 }}
                 >
-                    <MenuItem
-                        value="Group"
-                        style={{
-                            padding: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
+                    <MenuItem value="" disabled>
+                        Select Visibility
+                    </MenuItem>
+                    <MenuItem value="Group">
                         <BsPeopleFill style={{ marginRight: '5px' }} /> Group
                     </MenuItem>
-                    <MenuItem
-                        value="Public"
-                        style={{
-                            padding: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
+                    <MenuItem value="Public">
                         <BsGlobe style={{ marginRight: '5px' }} /> Public
                     </MenuItem>
-                    <MenuItem
-                        value="Only_Me"
-                        style={{
-                            padding: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
+                    <MenuItem value="Only_Me">
                         <BsLock style={{ marginRight: '5px' }} /> Only Me
                     </MenuItem>
                 </Select>
@@ -304,9 +289,7 @@ const CreatePost: React.FC = () => {
                                 <Chip
                                     key={index}
                                     label={option}
-                                    onDelete={() =>
-                                        handleDeletePollOption(option)
-                                    }
+                                    onDelete={() => handleDeletePollOption(option)}
                                 />
                             ))}
                         </Stack>
@@ -315,11 +298,7 @@ const CreatePost: React.FC = () => {
 
                 <Stack direction="row" spacing={1} flexWrap="wrap">
                     {tags.map((tag, index) => (
-                        <Chip
-                            key={index}
-                            label={tag}
-                            onDelete={() => handleDeleteTag(tag)}
-                        />
+                        <Chip key={index} label={tag} onDelete={() => handleDeleteTag(tag)} />
                     ))}
                 </Stack>
                 <Button
@@ -328,11 +307,7 @@ const CreatePost: React.FC = () => {
                     disabled={loading}
                     sx={{ position: 'relative', height: 36 }}
                 >
-                    {loading ? (
-                        <CircularProgress size={24} color="inherit" />
-                    ) : (
-                        'Create Post'
-                    )}
+                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Post'}
                 </Button>
                 {errorAlert && <Alert severity="error">{errorAlert}</Alert>}
                 <DarkOutlinedSnackbar
