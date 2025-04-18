@@ -11,7 +11,7 @@ import {
 import { BsArrowLeft, BsGoogle } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-
+import ConfirmationModal from './Modal';
 import { auth } from '../ts/app';
 
 const googleProvider = new GoogleAuthProvider();
@@ -22,6 +22,7 @@ interface User {
     displayName: string;
 }
 
+
 const Accounts = () => {
     const [user, setUser] = useState<User>({
         userEmail: '',
@@ -30,7 +31,19 @@ const Accounts = () => {
     });
     const navigate = useNavigate();
 
+    const [openModal, setOpenModal] = useState(false);
     // Listen to authentication state changes
+
+
+const signout = () => {
+    auth.signOut().then(() => {
+        console.log('User signed out.');
+        setOpenModal(true);        
+    });
+}
+
+
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
             if (currentUser) {
@@ -99,7 +112,51 @@ const Accounts = () => {
                     </Box>
                 )}
             </Box>
-        </>
+
+            {/* User Info */}
+            {user.userEmail && (
+                <Box
+                    sx={{
+                        mt: 3,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        alignItems: 'center',
+                    }}
+                >
+                    <Typography variant="h6">
+                        Welcome, {user.displayName}!
+                    </Typography>
+                    <Typography variant="body1">
+                        Email: {user.userEmail}
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => signout()}
+                    >
+                        Sign Out
+                    </Button>
+                </Box>
+            )}
+
+            {/* Confirmation Modal */}
+            <ConfirmationModal
+                open={openModal}
+                description="Are you sure you want to sign out?"
+                onCancel={() => setOpenModal(false)}
+                   
+                
+                onConfirm={() => {
+                    setOpenModal(false);
+                    auth.signOut();
+                    console.log('User signed out.');
+                    // Redirect to home page after sign out
+                    window.location.reload();
+                }}
+            />
+        </>    
+        
     );
 };
 
