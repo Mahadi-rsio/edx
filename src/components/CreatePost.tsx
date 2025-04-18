@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { db, auth } from './../ts/app';
 import { collection, addDoc } from 'firebase/firestore';
 import { DarkOutlinedSnackbar } from './Utils';
-import { BsArrowLeft, BsNewspaper, BsStar, BsBarChart } from 'react-icons/bs';
+import { BsArrowLeft, BsNewspaper, BsStar, BsBarChart, BsPeopleFill, BsGlobe, BsLock } from 'react-icons/bs';
 import { onAuthStateChanged } from 'firebase/auth';
 
 const CreatePost: React.FC = () => {
@@ -32,6 +32,10 @@ const CreatePost: React.FC = () => {
     const [errorAlert, setErrorAlert] = useState('');
     const [userId, setUserId] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [url, setUrl] = useState('');
+    const [visibility, setVisibility] = useState('');
+    const [pollOptions, setPollOptions] = useState<string[]>([]);
+    const [pollOptionInput, setPollOptionInput] = useState('');
     const navigate = useNavigate();
 
     const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -65,14 +69,27 @@ const CreatePost: React.FC = () => {
             uid: userId,
             userName: username,
             content,
-            title: title,
+            title,
+            url,
+            tags,
+            category: selectedCategory,
+            visibility,
             likeCount: 0,
             commentCount: 0,
-            tags,
             avatarUrl: '',
             imageUrl: '',
             timestamp: new Date().getTime(),
         };
+
+        if (selectedCategory === 'Poll_Post' && pollOptions.length === 0) {
+            setErrorAlert('Please add at least one poll option.');
+            setLoading(false);
+            return;
+        }
+
+        if (selectedCategory === 'Poll_Post') {
+            postData.pollOptions = pollOptions;
+        }
 
         try {
             await addDoc(collection(db, 'posts'), postData);
@@ -80,6 +97,7 @@ const CreatePost: React.FC = () => {
             setUsername('');
             setContent('');
             setTags([]);
+            setPollOptions([]);
             setErrorAlert('');
 
             // Redirect to home after a delay (e.g., 2 seconds)
@@ -94,9 +112,20 @@ const CreatePost: React.FC = () => {
         }
     };
 
+    const handleAddPollOption = () => {
+        if (pollOptionInput.trim() !== '') {
+            setPollOptions([...pollOptions, pollOptionInput.trim()]);
+            setPollOptionInput('');
+        }
+    };
+
+    const handleDeletePollOption = (optionToDelete: string) => {
+        setPollOptions(pollOptions.filter((option) => option !== optionToDelete));
+    };
+
     return (
         <>
-            <AppBar position="static">
+            <AppBar position="sticky">
                 <Toolbar>
                     <IconButton
                         edge="start"
@@ -141,6 +170,13 @@ const CreatePost: React.FC = () => {
                     onChange={(e) => setContent(e.target.value)}
                 />
                 <TextField
+                    label="URL"
+                    variant="outlined"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    helperText="Optional: Add a URL related to your post"
+                />
+                <TextField
                     label="Add Tag"
                     variant="outlined"
                     value={tagInput}
@@ -149,16 +185,17 @@ const CreatePost: React.FC = () => {
                     helperText="Press Enter to add a tag"
                 />
 
-
+                <Typography variant="body1" sx={{ marginBottom: -1}}>
+                    Select Post Category
+                </Typography>
                 <Select
                     labelId="post-category-label"
                     id="post-category"
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     displayEmpty
-                    sx={{ width: '100%', marginBottom: 2 }}
+                    sx={{ width: '100%', marginBottom: 1 }}
                 >
-                    
                     <MenuItem value="News_Feed" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
                         <BsNewspaper style={{ marginRight: '5px' }} /> News Feed
                     </MenuItem>
@@ -170,8 +207,56 @@ const CreatePost: React.FC = () => {
                     </MenuItem>
                 </Select>
 
+                <Typography variant="body1" sx={{ marginBottom: -1.5 }}>
+                    Visibility
+                </Typography>
+                <Select
+                    labelId="visibility-label"
+                    id="visibility"
+                    value={visibility}
+                    onChange={(e) => setVisibility(e.target.value)}
+                    displayEmpty
+                    sx={{ width: '100%', marginBottom: 2 }}
+                >
+                    <MenuItem value="Group" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                        <BsPeopleFill style={{ marginRight: '5px' }} /> Group
+                    </MenuItem>
+                    <MenuItem value="Public" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                        <BsGlobe style={{ marginRight: '5px' }} /> Public
+                    </MenuItem>
+                    <MenuItem value="Only_Me" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                        <BsLock style={{ marginRight: '5px' }} /> Only Me
+                    </MenuItem>
+                </Select>
 
-
+                {selectedCategory === 'Poll_Post' && (
+                    <Box>
+                        <TextField
+                            label="Add Poll Option"
+                            variant="outlined"
+                            value={pollOptionInput}
+                            onChange={(e) => setPollOptionInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleAddPollOption();
+                                }
+                            }}
+                            helperText="Press Enter to add a poll option"
+                            fullWidth
+                            sx={{ marginBottom: 2 }}
+                        />
+                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                            {pollOptions.map((option, index) => (
+                                <Chip
+                                    key={index}
+                                    label={option}
+                                    onDelete={() => handleDeletePollOption(option)}
+                                />
+                            ))}
+                        </Stack>
+                    </Box>
+                )}
 
                 <Stack direction="row" spacing={1} flexWrap="wrap">
                     {tags.map((tag, index) => (
