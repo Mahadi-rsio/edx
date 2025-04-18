@@ -78,7 +78,9 @@ const CreatePost: React.FC = () => {
             commentCount: 0,
             avatarUrl: '',
             imageUrl: '',
-            timestamp: new Date().getTime(),
+            timestamp: new Date().getDate(),
+            pollOptions: [] as string[],
+
         };
 
         if (selectedCategory === 'Poll_Post' && pollOptions.length === 0) {
