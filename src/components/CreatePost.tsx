@@ -28,6 +28,7 @@ import {
     BsLock,
 } from 'react-icons/bs';
 import { onAuthStateChanged } from 'firebase/auth';
+import ConfirmationModal from './Modal';
 
 const CreatePost: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -44,6 +45,7 @@ const CreatePost: React.FC = () => {
     const [visibility, setVisibility] = useState('');
     const [pollOptions, setPollOptions] = useState<string[]>([]);
     const [pollOptionInput, setPollOptionInput] = useState('');
+    const [openModal, setOpenModal] = useState(false);
     const navigate = useNavigate();
 
     // Set username and userId based on auth state
@@ -54,6 +56,12 @@ const CreatePost: React.FC = () => {
         });
         return () => unsubscribe();
     }, []);
+
+    useEffect(() => {
+        if (!auth.currentUser) {
+            navigate('/accounts');
+        }
+    });
 
     // Handle adding tags
     const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -73,7 +81,10 @@ const CreatePost: React.FC = () => {
 
     // Handle adding poll options
     const handleAddPollOption = () => {
-        if (pollOptionInput.trim() !== '' && !pollOptions.includes(pollOptionInput.trim())) {
+        if (
+            pollOptionInput.trim() !== '' &&
+            !pollOptions.includes(pollOptionInput.trim())
+        ) {
             setPollOptions([...pollOptions, pollOptionInput.trim()]);
             setPollOptionInput('');
         }
@@ -81,7 +92,9 @@ const CreatePost: React.FC = () => {
 
     // Handle deleting poll options
     const handleDeletePollOption = (optionToDelete: string) => {
-        setPollOptions(pollOptions.filter((option) => option !== optionToDelete));
+        setPollOptions(
+            pollOptions.filter((option) => option !== optionToDelete),
+        );
     };
 
     // Handle form submission to Firestore
@@ -164,10 +177,17 @@ const CreatePost: React.FC = () => {
         <>
             <AppBar position="sticky">
                 <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={() => navigate(-1)}>
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={() => navigate(-1)}
+                    >
                         <BsArrowLeft size={18} />
                     </IconButton>
-                    <Typography variant="body1" sx={{ flexGrow: 1, textAlign: 'center' }}>
+                    <Typography
+                        variant="body1"
+                        sx={{ flexGrow: 1, textAlign: 'center' }}
+                    >
                         Create New Post
                     </Typography>
                 </Toolbar>
@@ -289,7 +309,9 @@ const CreatePost: React.FC = () => {
                                 <Chip
                                     key={index}
                                     label={option}
-                                    onDelete={() => handleDeletePollOption(option)}
+                                    onDelete={() =>
+                                        handleDeletePollOption(option)
+                                    }
                                 />
                             ))}
                         </Stack>
@@ -298,7 +320,11 @@ const CreatePost: React.FC = () => {
 
                 <Stack direction="row" spacing={1} flexWrap="wrap">
                     {tags.map((tag, index) => (
-                        <Chip key={index} label={tag} onDelete={() => handleDeleteTag(tag)} />
+                        <Chip
+                            key={index}
+                            label={tag}
+                            onDelete={() => handleDeleteTag(tag)}
+                        />
                     ))}
                 </Stack>
                 <Button
@@ -307,7 +333,11 @@ const CreatePost: React.FC = () => {
                     disabled={loading}
                     sx={{ position: 'relative', height: 36 }}
                 >
-                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Post'}
+                    {loading ? (
+                        <CircularProgress size={24} color="inherit" />
+                    ) : (
+                        'Create Post'
+                    )}
                 </Button>
                 {errorAlert && <Alert severity="error">{errorAlert}</Alert>}
                 <DarkOutlinedSnackbar
@@ -316,6 +346,14 @@ const CreatePost: React.FC = () => {
                     onClose={() => setSnackbarOpen(false)}
                 />
             </Box>
+            <ConfirmationModal
+                open={openModal}
+                onCancel={() => setOpenModal(false)}
+                description="You are not logged in. Please log in to create a post"
+                onConfirm={() => {
+                    navigate('/');
+                }}
+            />
         </>
     );
 };
