@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     collection,
@@ -54,13 +53,13 @@ const PostContainer: React.FC = () => {
                     collection(db, 'posts'),
                     orderBy('timestamp', 'desc'),
                     startAfter(lastVisibleDocRef.current),
-                    limit(POSTS_BATCH_SIZE)
+                    limit(POSTS_BATCH_SIZE),
                 );
             } else {
                 postsQuery = query(
                     collection(db, 'posts'),
                     orderBy('timestamp', 'desc'),
-                    limit(POSTS_BATCH_SIZE)
+                    limit(POSTS_BATCH_SIZE),
                 );
             }
             const snapshot = await getDocs(postsQuery);
@@ -70,7 +69,8 @@ const PostContainer: React.FC = () => {
             })) as PostData[];
 
             if (snapshot.docs.length > 0) {
-                lastVisibleDocRef.current = snapshot.docs[snapshot.docs.length - 1];
+                lastVisibleDocRef.current =
+                    snapshot.docs[snapshot.docs.length - 1];
             }
             // If fewer posts were returned than expected, there are no more posts
             if (snapshot.docs.length < POSTS_BATCH_SIZE) {
@@ -87,7 +87,9 @@ const PostContainer: React.FC = () => {
 
     // Callback to remove a post from state after deletion
     const handlePostDelete = (deletedPostId: string) => {
-        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== deletedPostId));
+        setPosts((prevPosts) =>
+            prevPosts.filter((post) => post.id !== deletedPostId),
+        );
     };
 
     // IntersectionObserver for infinite scroll
@@ -103,7 +105,7 @@ const PostContainer: React.FC = () => {
             });
             if (node) observer.current.observe(node);
         },
-        [loading, hasMore]
+        [loading, hasMore],
     );
 
     // Initial fetch: only run once (even if Strict Mode mounts twice)
@@ -145,7 +147,9 @@ const PostContainer: React.FC = () => {
                                 content={post.content}
                                 timestamp={
                                     post.timestamp
-                                        ? new Date(post.timestamp).toLocaleDateString()
+                                        ? new Date(
+                                              post.timestamp,
+                                          ).toLocaleDateString()
                                         : ''
                                 }
                                 commentCount={post.commentCount || 0}
@@ -191,7 +195,12 @@ const PostContainer: React.FC = () => {
                     <Typography color="error" sx={{ mt: 1 }}>
                         Something went wrong
                     </Typography>
-                    <Button variant="contained" color="primary" onClick={fetchPosts} sx={{ mt: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={fetchPosts}
+                        sx={{ mt: 2 }}
+                    >
                         Retry
                     </Button>
                 </div>

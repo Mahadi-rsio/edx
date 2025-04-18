@@ -12,13 +12,21 @@ import {
     Toolbar,
     IconButton,
     Select,
-    MenuItem
+    MenuItem,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { db, auth } from './../ts/app';
 import { collection, addDoc } from 'firebase/firestore';
 import { DarkOutlinedSnackbar } from './Utils';
-import { BsArrowLeft, BsNewspaper, BsStar, BsBarChart, BsPeopleFill, BsGlobe, BsLock } from 'react-icons/bs';
+import {
+    BsArrowLeft,
+    BsNewspaper,
+    BsStar,
+    BsBarChart,
+    BsPeopleFill,
+    BsGlobe,
+    BsLock,
+} from 'react-icons/bs';
 import { onAuthStateChanged } from 'firebase/auth';
 
 const CreatePost: React.FC = () => {
@@ -80,7 +88,6 @@ const CreatePost: React.FC = () => {
             imageUrl: '',
             timestamp: new Date().getDate(),
             pollOptions: [] as string[],
-
         };
 
         if (selectedCategory === 'Poll_Post' && pollOptions.length === 0) {
@@ -122,7 +129,9 @@ const CreatePost: React.FC = () => {
     };
 
     const handleDeletePollOption = (optionToDelete: string) => {
-        setPollOptions(pollOptions.filter((option) => option !== optionToDelete));
+        setPollOptions(
+            pollOptions.filter((option) => option !== optionToDelete),
+        );
     };
 
     return (
@@ -187,7 +196,7 @@ const CreatePost: React.FC = () => {
                     helperText="Press Enter to add a tag"
                 />
 
-                <Typography variant="body1" sx={{ marginBottom: -1}}>
+                <Typography variant="body1" sx={{ marginBottom: -1 }}>
                     Select Post Category
                 </Typography>
                 <Select
@@ -198,13 +207,34 @@ const CreatePost: React.FC = () => {
                     displayEmpty
                     sx={{ width: '100%', marginBottom: 1 }}
                 >
-                    <MenuItem value="News_Feed" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                    <MenuItem
+                        value="News_Feed"
+                        style={{
+                            padding: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <BsNewspaper style={{ marginRight: '5px' }} /> News Feed
                     </MenuItem>
-                    <MenuItem value="Review_Post" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                    <MenuItem
+                        value="Review_Post"
+                        style={{
+                            padding: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <BsStar style={{ marginRight: '5px' }} /> Review Post
                     </MenuItem>
-                    <MenuItem value="Poll_Post" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                    <MenuItem
+                        value="Poll_Post"
+                        style={{
+                            padding: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <BsBarChart style={{ marginRight: '5px' }} /> Poll Post
                     </MenuItem>
                 </Select>
@@ -220,13 +250,34 @@ const CreatePost: React.FC = () => {
                     displayEmpty
                     sx={{ width: '100%', marginBottom: 2 }}
                 >
-                    <MenuItem value="Group" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                    <MenuItem
+                        value="Group"
+                        style={{
+                            padding: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <BsPeopleFill style={{ marginRight: '5px' }} /> Group
                     </MenuItem>
-                    <MenuItem value="Public" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                    <MenuItem
+                        value="Public"
+                        style={{
+                            padding: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <BsGlobe style={{ marginRight: '5px' }} /> Public
                     </MenuItem>
-                    <MenuItem value="Only_Me" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                    <MenuItem
+                        value="Only_Me"
+                        style={{
+                            padding: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <BsLock style={{ marginRight: '5px' }} /> Only Me
                     </MenuItem>
                 </Select>
@@ -253,7 +304,9 @@ const CreatePost: React.FC = () => {
                                 <Chip
                                     key={index}
                                     label={option}
-                                    onDelete={() => handleDeletePollOption(option)}
+                                    onDelete={() =>
+                                        handleDeletePollOption(option)
+                                    }
                                 />
                             ))}
                         </Stack>

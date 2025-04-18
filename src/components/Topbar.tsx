@@ -72,8 +72,9 @@ function Topbar(): JSX.Element {
                     {/* Right section: Search icon and user chip */}
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton
-                                onClick={() => navigate('/search')} 
-                                sx={{ mr: 1 }}>
+                            onClick={() => navigate('/search')}
+                            sx={{ mr: 1 }}
+                        >
                             <BsSearch style={{ fontSize: '1.2rem' }} />
                         </IconButton>
                         <IconButton sx={{ mr: 1 }}>

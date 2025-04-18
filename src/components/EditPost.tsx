@@ -42,6 +42,12 @@ const EditPost: React.FC = () => {
             setTagInput('');
         }
     };
+    console.log(username, userUID);
+    // Check if the user is logged in and set the username and user UID
+    // when the component mounts.
+    // This is done using the onAuthStateChanged method from Firebase Auth.
+    // This method listens for changes in the user's authentication state.
+    // If the user is logged in, it sets the username and user UID.
 
     useEffect(() => {
         // Set the username and user UID from auth state.

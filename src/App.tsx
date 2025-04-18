@@ -8,7 +8,7 @@ const CreatePost = lazy(() => import('./components/CreatePost.tsx'));
 const Search = lazy(() => import('./components/Search.tsx'));
 const EditProfile = lazy(() => import('./components/EditProfile.tsx'));
 const Accounts = lazy(() => import('./components/Accounts.tsx'));
-const EditPost = lazy(()=>import('./components/EditPost.tsx'))
+const EditPost = lazy(() => import('./components/EditPost.tsx'));
 
 function App() {
     return (
@@ -30,10 +30,10 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/create_post" element={<CreatePost />} />
-                    <Route path="/search" element={<Search/>} />
+                    <Route path="/search" element={<Search />} />
                     <Route path="/edit_profile" element={<EditProfile />} />
                     <Route path="/accounts" element={<Accounts />} />
-                    <Route path='/edit_post/:postId' element={<EditPost/>}/>
+                    <Route path="/edit_post/:postId" element={<EditPost />} />
                 </Routes>
             </Suspense>
         </Router>

@@ -114,7 +114,10 @@ const Post: React.FC<FacebookPostProps> = ({
 
     return (
         <>
-            <Card data-postid={postId} sx={{ maxWidth: 600, margin: 'auto', mt: 2, boxShadow: 3 }}>
+            <Card
+                data-postid={postId}
+                sx={{ maxWidth: 600, margin: 'auto', mt: 2, boxShadow: 3 }}
+            >
                 <CardHeader
                     avatar={
                         <Avatar
@@ -128,7 +131,10 @@ const Post: React.FC<FacebookPostProps> = ({
                         </Avatar>
                     }
                     action={
-                        <IconButton aria-label="more options" onClick={toggleDrawer(true)}>
+                        <IconButton
+                            aria-label="more options"
+                            onClick={toggleDrawer(true)}
+                        >
                             <BsThreeDots size={20} />
                         </IconButton>
                     }
@@ -164,7 +170,12 @@ const Post: React.FC<FacebookPostProps> = ({
                         <Typography variant="body1">{content}</Typography>
                     </Box>
                     {hashtags.length > 0 && (
-                        <Stack direction="row" spacing={1} mt={2} flexWrap="wrap">
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            mt={2}
+                            flexWrap="wrap"
+                        >
                             {hashtags.map((tag, index) => (
                                 <Chip
                                     key={index}
@@ -229,7 +240,11 @@ const Post: React.FC<FacebookPostProps> = ({
                 </CardActions>
             </Card>
 
-            <Drawer anchor="bottom" open={drawerOpen} onClose={toggleDrawer(false)}>
+            <Drawer
+                anchor="bottom"
+                open={drawerOpen}
+                onClose={toggleDrawer(false)}
+            >
                 <Box role="presentation" sx={{ width: 'auto', padding: 1 }}>
                     <List>
                         {isLogged && currentUserUid === uid && (
@@ -244,7 +259,9 @@ const Post: React.FC<FacebookPostProps> = ({
                                     </ListItemIcon>
                                     <ListItemText primary="Edit post" />
                                 </ListItemButton>
-                                <ListItemButton onClick={() => setOpenConfirm(true)}>
+                                <ListItemButton
+                                    onClick={() => setOpenConfirm(true)}
+                                >
                                     <ListItemIcon>
                                         <BsTrash size={20} />
                                     </ListItemIcon>

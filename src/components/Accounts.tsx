@@ -10,11 +10,7 @@ import {
 
 import { BsArrowLeft, BsGoogle } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
-import {
-    GoogleAuthProvider,
-    signInWithPopup,
-    
-} from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 import { auth } from '../ts/app';
 
