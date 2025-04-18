@@ -14,7 +14,11 @@ import {
 } from '@mui/material';
 import { BsArrowLeft, BsGoogle } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
-import { GoogleAuthProvider, signInWithPopup, EmailAuthProvider } from 'firebase/auth';
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
+    EmailAuthProvider,
+} from 'firebase/auth';
 import ConfirmationModal from './Modal';
 import { auth } from '../ts/app';
 
@@ -38,7 +42,9 @@ const Accounts = () => {
     });
     const navigate = useNavigate();
     const [openModal, setOpenModal] = useState(false);
-    const [modalAction, setModalAction] = useState<'signout' | 'delete' | null>(null);
+    const [modalAction, setModalAction] = useState<'signout' | 'delete' | null>(
+        null,
+    );
 
     // States for updating username
     const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -95,7 +101,9 @@ const Accounts = () => {
     const handleUpdateUsername = async () => {
         if (auth.currentUser) {
             try {
-                await auth.currentUser.updateProfile({ displayName: newUsername });
+                await auth.currentUser.updateProfile({
+                    displayName: newUsername,
+                });
                 setUser((prev) => ({ ...prev, displayName: newUsername }));
                 setIsEditingUsername(false);
             } catch (error) {
@@ -112,7 +120,10 @@ const Accounts = () => {
         }
         if (auth.currentUser && auth.currentUser.email) {
             try {
-                const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+                const credential = EmailAuthProvider.credential(
+                    auth.currentUser.email,
+                    currentPassword,
+                );
                 await auth.currentUser.reauthenticateWithCredential(credential);
                 await auth.currentUser.updatePassword(newPassword);
                 setIsUpdatingPassword(false);
@@ -122,7 +133,9 @@ const Accounts = () => {
                 setPasswordError('');
             } catch (error) {
                 console.error('Error updating password:', error);
-                setPasswordError('Failed to update password. Check your current password.');
+                setPasswordError(
+                    'Failed to update password. Check your current password.',
+                );
             }
         }
     };
@@ -131,7 +144,10 @@ const Accounts = () => {
     const handleUpdateEmail = async () => {
         if (auth.currentUser && auth.currentUser.email) {
             try {
-                const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+                const credential = EmailAuthProvider.credential(
+                    auth.currentUser.email,
+                    currentPassword,
+                );
                 await auth.currentUser.reauthenticateWithCredential(credential);
                 await auth.currentUser.updateEmail(newEmail);
                 setUser((prev) => ({ ...prev, userEmail: newEmail }));
@@ -140,7 +156,9 @@ const Accounts = () => {
                 setEmailError('');
             } catch (error) {
                 console.error('Error updating email:', error);
-                setEmailError('Failed to update email. Check your current password.');
+                setEmailError(
+                    'Failed to update email. Check your current password.',
+                );
             }
         }
     };
@@ -148,11 +166,20 @@ const Accounts = () => {
     return (
         <>
             <AppBar position="static">
-                <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <IconButton edge="start" color="inherit" onClick={() => navigate(-1)}>
+                <Toolbar
+                    sx={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={() => navigate(-1)}
+                    >
                         <BsArrowLeft size={18} />
                     </IconButton>
-                    <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
+                    <Typography
+                        variant="h6"
+                        sx={{ flexGrow: 1, textAlign: 'center' }}
+                    >
                         Accounts
                     </Typography>
                     <Box sx={{ width: 48 }} />
@@ -201,19 +228,34 @@ const Accounts = () => {
                             <Divider sx={{ width: '100%' }} />
                             <List sx={{ width: '100%' }}>
                                 <ListItem>
-                                    <ListItemText primary="Email" secondary={user.userEmail} />
+                                    <ListItemText
+                                        primary="Email"
+                                        secondary={user.userEmail}
+                                    />
                                 </ListItem>
                                 <ListItem>
-                                    <ListItemText primary="User Name" secondary={user.displayName} />
+                                    <ListItemText
+                                        primary="User Name"
+                                        secondary={user.displayName}
+                                    />
                                 </ListItem>
                                 <ListItem>
-                                    <ListItemText primary="User ID" secondary={user.uid} />
+                                    <ListItemText
+                                        primary="User ID"
+                                        secondary={user.uid}
+                                    />
                                 </ListItem>
                                 <ListItem>
-                                    <ListItemText primary="Created At" secondary={user.creationTime} />
+                                    <ListItemText
+                                        primary="Created At"
+                                        secondary={user.creationTime}
+                                    />
                                 </ListItem>
                                 <ListItem>
-                                    <ListItemText primary="Last Sign In" secondary={user.lastSignInTime} />
+                                    <ListItemText
+                                        primary="Last Sign In"
+                                        secondary={user.lastSignInTime}
+                                    />
                                 </ListItem>
                             </List>
                             <Divider sx={{ width: '100%' }} />
@@ -236,14 +278,21 @@ const Accounts = () => {
                                 label="Username"
                                 variant="outlined"
                                 fullWidth
-                                value={isEditingUsername ? newUsername : user.displayName}
+                                value={
+                                    isEditingUsername
+                                        ? newUsername
+                                        : user.displayName
+                                }
                                 onChange={(e) => setNewUsername(e.target.value)}
                                 InputProps={{ readOnly: !isEditingUsername }}
                                 sx={{ mt: 2 }}
                             />
                             {isEditingUsername ? (
                                 <Box sx={{ display: 'flex', gap: 1 }}>
-                                    <Button variant="contained" onClick={handleUpdateUsername}>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleUpdateUsername}
+                                    >
                                         Save
                                     </Button>
                                     <Button
@@ -257,7 +306,10 @@ const Accounts = () => {
                                     </Button>
                                 </Box>
                             ) : (
-                                <Button variant="contained" onClick={() => setIsEditingUsername(true)}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => setIsEditingUsername(true)}
+                                >
                                     Edit Username
                                 </Button>
                             )}
@@ -285,7 +337,9 @@ const Accounts = () => {
                                         variant="outlined"
                                         fullWidth
                                         value={currentPassword}
-                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                        onChange={(e) =>
+                                            setCurrentPassword(e.target.value)
+                                        }
                                         sx={{ mt: 2 }}
                                     />
                                     <TextField
@@ -294,7 +348,9 @@ const Accounts = () => {
                                         variant="outlined"
                                         fullWidth
                                         value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        onChange={(e) =>
+                                            setNewPassword(e.target.value)
+                                        }
                                         sx={{ mt: 2 }}
                                     />
                                     <TextField
@@ -303,14 +359,21 @@ const Accounts = () => {
                                         variant="outlined"
                                         fullWidth
                                         value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        onChange={(e) =>
+                                            setConfirmPassword(e.target.value)
+                                        }
                                         sx={{ mt: 2 }}
                                     />
                                     {passwordError && (
-                                        <Typography color="error">{passwordError}</Typography>
+                                        <Typography color="error">
+                                            {passwordError}
+                                        </Typography>
                                     )}
                                     <Box sx={{ display: 'flex', gap: 1 }}>
-                                        <Button variant="contained" onClick={handleUpdatePassword}>
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleUpdatePassword}
+                                        >
                                             Save
                                         </Button>
                                         <Button
@@ -356,7 +419,9 @@ const Accounts = () => {
                                 type="email"
                                 variant="outlined"
                                 fullWidth
-                                value={isUpdatingEmail ? newEmail : user.userEmail}
+                                value={
+                                    isUpdatingEmail ? newEmail : user.userEmail
+                                }
                                 onChange={(e) => setNewEmail(e.target.value)}
                                 InputProps={{ readOnly: !isUpdatingEmail }}
                                 sx={{ mt: 2 }}
@@ -368,13 +433,18 @@ const Accounts = () => {
                                     variant="outlined"
                                     fullWidth
                                     value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    onChange={(e) =>
+                                        setCurrentPassword(e.target.value)
+                                    }
                                     sx={{ mt: 2 }}
                                 />
                             )}
                             {isUpdatingEmail ? (
                                 <Box sx={{ display: 'flex', gap: 1 }}>
-                                    <Button variant="contained" onClick={handleUpdateEmail}>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleUpdateEmail}
+                                    >
                                         Save
                                     </Button>
                                     <Button
@@ -390,11 +460,18 @@ const Accounts = () => {
                                     </Button>
                                 </Box>
                             ) : (
-                                <Button variant="contained" onClick={() => setIsUpdatingEmail(true)}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => setIsUpdatingEmail(true)}
+                                >
                                     Update Email
                                 </Button>
                             )}
-                            {emailError && <Typography color="error">{emailError}</Typography>}
+                            {emailError && (
+                                <Typography color="error">
+                                    {emailError}
+                                </Typography>
+                            )}
                             <Divider sx={{ width: '100%' }} />
                         </Box>
 
@@ -438,13 +515,17 @@ const Accounts = () => {
                             <Typography sx={{ ml: 1 }} variant="body1">
                                 Delete Account
                             </Typography>
-                            <Typography variant="body2" sx={{ ml: 1 }} color="text.secondary">
-                                Deleting your account will remove all your data and cannot be undone.
-                                Please make sure to back up any important information before
-                                proceeding.
+                            <Typography
+                                variant="body2"
+                                sx={{ ml: 1 }}
+                                color="text.secondary"
+                            >
+                                Deleting your account will remove all your data
+                                and cannot be undone. Please make sure to back
+                                up any important information before proceeding.
                                 <br />
-                                If you are sure you want to delete your account, click the button
-                                below.
+                                If you are sure you want to delete your account,
+                                click the button below.
                                 <br />
                             </Typography>
                             <Button
@@ -485,13 +566,19 @@ const Accounts = () => {
                         });
                     } else if (modalAction === 'delete') {
                         if (auth.currentUser) {
-                            auth.currentUser.delete().then(() => {
-                                console.log('Account deleted.');
-                                window.location.reload();
-                            }).catch((error) => {
-                                console.error('Error deleting account:', error);
-                                // Note: May require re-authentication
-                            });
+                            auth.currentUser
+                                .delete()
+                                .then(() => {
+                                    console.log('Account deleted.');
+                                    window.location.reload();
+                                })
+                                .catch((error) => {
+                                    console.error(
+                                        'Error deleting account:',
+                                        error,
+                                    );
+                                    // Note: May require re-authentication
+                                });
                         }
                     }
                     setModalAction(null);

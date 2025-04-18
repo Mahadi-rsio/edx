@@ -1,52 +1,45 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, FormEvent } from 'react';
 import {
     Container,
+    Typography,
     TextField,
     Button,
-    Typography,
-    Box,
     MenuItem,
-    Paper,
+    Chip,
+    Box,
+    FormControl,
+    InputLabel,
+    Select,
+    SelectChangeEvent,
+    Stepper,
+    Step,
+    StepLabel,
     Divider,
-    InputAdornment,
-    CircularProgress,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
+    AppBar,
+    Toolbar,
+    IconButton,
 } from '@mui/material';
-// Use the new Unstable_Grid2 from MUI
-import Grid from '@mui/material/Grid';
 import {
-    BsPerson,
-    BsLock,
-    BsTelephone,
-    BsEnvelope,
-    BsCalendar,
-    BsStar,
-    BsQuestionCircle,
-    BsBriefcase,
-    BsHeart,
-} from 'react-icons/bs';
+    FaUser,
+    FaPhone,
+    FaBirthdayCake,
+    FaHeart,
+    FaBriefcase,
+    FaSchool,
+    FaGraduationCap,
+    FaBook,
+    FaStar,
+} from 'react-icons/fa';
+import { BsArrowLeft } from 'react-icons/bs';
 
-import { doc, setDoc } from 'firebase/firestore';
-import { db } from './../ts/app';
-
-interface FormData {
-    // Personal Info
+interface Profile {
     name: string;
-    password: string;
     phone: string;
-    email: string;
     dob: string;
     relationshipStatus: string;
-    // Professional & Interests
     profession: string;
-    hobby: string;
-    skills: string;
-    others: string;
-    // Education
+    hobbies: string[];
+    skills: string[];
     school: string;
     college: string;
     university: string;
@@ -55,17 +48,15 @@ interface FormData {
 }
 
 const EditProfile: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
+    // State for profile data
+    const [profile, setProfile] = useState<Profile>({
         name: '',
-        password: '',
         phone: '',
-        email: '',
         dob: '',
         relationshipStatus: '',
         profession: '',
-        hobby: '',
-        skills: '',
-        others: '',
+        hobbies: [],
+        skills: [],
         school: '',
         college: '',
         university: '',
@@ -73,379 +64,438 @@ const EditProfile: React.FC = () => {
         weakSubject: '',
     });
 
-    const [loading, setLoading] = useState<boolean>(false);
-    const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    // State for chip inputs
+    const [hobbyInput, setHobbyInput] = useState<string>('');
+    const [skillInput, setSkillInput] = useState<string>('');
 
-    const relationshipOptions = [
-        { value: 'single', label: 'Single' },
-        { value: 'married', label: 'Married' },
+    // State for stepper
+    const [activeStep, setActiveStep] = useState(0);
+    const steps = [
+        'Personal Information',
+        'Education',
+        'Professional Information',
+        'Interests',
     ];
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setFormData((prev) => ({
+    // Handlers
+    const handleChange = (
+        e:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | SelectChangeEvent<string>,
+    ) => {
+        const { name, value } = e.target;
+        setProfile((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleHobbyAdd = () => {
+        if (hobbyInput.trim() && !profile.hobbies.includes(hobbyInput.trim())) {
+            setProfile((prev) => ({
+                ...prev,
+                hobbies: [...prev.hobbies, hobbyInput.trim()],
+            }));
+            setHobbyInput('');
+        }
+    };
+
+    const handleSkillAdd = () => {
+        if (skillInput.trim() && !profile.skills.includes(skillInput.trim())) {
+            setProfile((prev) => ({
+                ...prev,
+                skills: [...prev.skills, skillInput.trim()],
+            }));
+            setSkillInput('');
+        }
+    };
+
+    const handleHobbyDelete = (hobbyToDelete: string) => {
+        setProfile((prev) => ({
             ...prev,
-            [e.target.name]: e.target.value,
+            hobbies: prev.hobbies.filter((hobby) => hobby !== hobbyToDelete),
         }));
     };
 
-    const handleCloseErrorModal = () => {
-        setErrorModalOpen(false);
+    const handleSkillDelete = (skillToDelete: string) => {
+        setProfile((prev) => ({
+            ...prev,
+            skills: prev.skills.filter((skill) => skill !== skillToDelete),
+        }));
     };
 
-    // Basic validation for required fields
-    const validateForm = (): boolean => {
-        const requiredFields = ['name', 'password', 'phone', 'email'];
-        for (const field of requiredFields) {
-            if (!formData[field as keyof FormData].trim()) {
-                setErrorMessage(`Please fill in your ${field}.`);
-                return false;
-            }
-        }
-        return true;
-    };
-
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        // Validate required fields
-        if (!validateForm()) {
-            setErrorModalOpen(true);
-            return;
-        }
-
-        setLoading(true);
-        try {
-            // Using the email as a unique document ID – adjust as needed
-            const userDoc = doc(db, 'users', formData.email);
-            await setDoc(userDoc, formData);
-            console.log('Data saved successfully');
-            // Optionally add additional success feedback here (e.g., success modal or redirect)
-        } catch (error) {
-            console.error('Error saving data: ', error);
-            setErrorMessage(
-                'An error occurred while saving your data. Please try again.',
-            );
-            setErrorModalOpen(true);
-        } finally {
-            setLoading(false);
-        }
+        console.log('Profile Data:', profile);
+        // Replace with API call or logic to save the profile
     };
 
     return (
-        <Container maxWidth="md">
-            <Box sx={{ my: 4 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Edit Profile
-                </Typography>
+        <>
+            <AppBar position="sticky">
+                <Toolbar>
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={() => window.history.back()}
+                    >
+                        <BsArrowLeft />
+                    </IconButton>
+                    <Typography
+                        variant="h6"
+                        sx={{ flexGrow: 1, textAlign: 'center' }}
+                    >
+                        Edit Profile
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+            <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+                {/* Stepper */}
+                <Stepper
+                    activeStep={activeStep}
+                    alternativeLabel
+                    sx={{ mb: 3 }}
+                >
+                    {steps.map((label) => (
+                        <Step key={label}>
+                            <StepLabel>{label}</StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
+
+                {/* Form */}
                 <form onSubmit={handleSubmit}>
-                    {/* PERSONAL INFORMATION */}
-                    <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" gutterBottom>
-                            Personal Information
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <Grid container spacing={2}>
-                            {/* Name */}
-                            <Grid xs={12} sm={6}>
+                    <Box sx={{ mt: 2 }}>
+                        {/* Step 1: Personal Information */}
+                        {activeStep === 0 && (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 2,
+                                }}
+                            >
+                                <Typography variant="h6">
+                                    Personal Information
+                                </Typography>
                                 <TextField
-                                    fullWidth
-                                    name="name"
                                     label="Name"
-                                    variant="outlined"
-                                    value={formData.name}
+                                    name="name"
+                                    value={profile.name}
                                     onChange={handleChange}
                                     InputProps={{
                                         startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsPerson />
-                                            </InputAdornment>
+                                            <FaUser
+                                                style={{ marginRight: '8px' }}
+                                            />
                                         ),
                                     }}
-                                />
-                            </Grid>
-                            {/* Password */}
-                            <Grid xs={12} sm={6}>
-                                <TextField
                                     fullWidth
-                                    type="password"
-                                    name="password"
-                                    label="Password"
-                                    variant="outlined"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsLock />
-                                            </InputAdornment>
-                                        ),
-                                    }}
+                                    required
                                 />
-                            </Grid>
-                            {/* Phone */}
-                            <Grid xs={12} sm={6}>
                                 <TextField
-                                    fullWidth
+                                    label="Phone"
                                     name="phone"
-                                    label="Phone Number"
-                                    variant="outlined"
-                                    value={formData.phone}
+                                    value={profile.phone}
                                     onChange={handleChange}
                                     InputProps={{
                                         startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsTelephone />
-                                            </InputAdornment>
+                                            <FaPhone
+                                                style={{ marginRight: '8px' }}
+                                            />
                                         ),
                                     }}
-                                />
-                            </Grid>
-                            {/* Email */}
-                            <Grid xs={12} sm={6}>
-                                <TextField
                                     fullWidth
-                                    name="email"
-                                    label="Email"
-                                    variant="outlined"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsEnvelope />
-                                            </InputAdornment>
-                                        ),
-                                    }}
+                                    required
                                 />
-                            </Grid>
-                            {/* Date of Birth */}
-                            <Grid xs={12} sm={6}>
                                 <TextField
-                                    fullWidth
-                                    type="date"
-                                    name="dob"
                                     label="Date of Birth"
-                                    variant="outlined"
-                                    value={formData.dob}
+                                    name="dob"
+                                    type="date"
+                                    value={profile.dob}
                                     onChange={handleChange}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
                                     InputProps={{
                                         startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsCalendar />
-                                            </InputAdornment>
+                                            <FaBirthdayCake
+                                                style={{ marginRight: '8px' }}
+                                            />
                                         ),
                                     }}
-                                />
-                            </Grid>
-                            {/* Relationship Status */}
-                            <Grid xs={12} sm={6}>
-                                <TextField
-                                    select
                                     fullWidth
-                                    name="relationshipStatus"
-                                    label="Relationship Status"
-                                    variant="outlined"
-                                    value={formData.relationshipStatus}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsHeart />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                >
-                                    {relationshipOptions.map((option) => (
-                                        <MenuItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
+                                    required
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                                <FormControl fullWidth required>
+                                    <InputLabel>Relationship Status</InputLabel>
+                                    <Select
+                                        name="relationshipStatus"
+                                        value={profile.relationshipStatus}
+                                        onChange={handleChange}
+                                        inputProps={{
+                                            startAdornment: (
+                                                <FaHeart
+                                                    style={{
+                                                        marginRight: '8px',
+                                                    }}
+                                                />
+                                            ),
+                                        }}
+                                    >
+                                        <MenuItem value="Single">
+                                            Single
                                         </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-                        </Grid>
-                    </Paper>
+                                        <MenuItem value="In a Relationship">
+                                            In a Relationship
+                                        </MenuItem>
+                                        <MenuItem value="Married">
+                                            Married
+                                        </MenuItem>
+                                        <MenuItem value="Other">Other</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        )}
 
-                    {/* PROFESSIONAL & INTERESTS */}
-                    <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" gutterBottom>
-                            Professional & Interests
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <Grid container spacing={2}>
-                            {/* Profession */}
-                            <Grid xs={12} sm={6}>
+                        {/* Step 2: Education */}
+                        {activeStep === 1 && (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 2,
+                                }}
+                            >
+                                <Typography variant="h6">Education</Typography>
                                 <TextField
-                                    fullWidth
-                                    name="profession"
-                                    label="Profession"
-                                    variant="outlined"
-                                    value={formData.profession}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsBriefcase />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Grid>
-                            {/* Hobby */}
-                            <Grid xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    name="hobby"
-                                    label="Hobby"
-                                    variant="outlined"
-                                    value={formData.hobby}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
-                            {/* Skills */}
-                            <Grid xs={12}>
-                                <TextField
-                                    fullWidth
-                                    name="skills"
-                                    label="Skills (comma separated)"
-                                    variant="outlined"
-                                    value={formData.skills}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
-                            {/* Others */}
-                            <Grid xs={12}>
-                                <TextField
-                                    fullWidth
-                                    name="others"
-                                    label="Other Details"
-                                    variant="outlined"
-                                    multiline
-                                    rows={4}
-                                    value={formData.others}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Paper>
-
-                    {/* EDUCATIONAL INFORMATION */}
-                    <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" gutterBottom>
-                            Educational Information
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <Grid container spacing={2}>
-                            {/* School */}
-                            <Grid xs={12} sm={4}>
-                                <TextField
-                                    fullWidth
-                                    name="school"
                                     label="School"
-                                    variant="outlined"
-                                    value={formData.school}
+                                    name="school"
+                                    value={profile.school}
                                     onChange={handleChange}
-                                />
-                            </Grid>
-                            {/* College */}
-                            <Grid xs={12} sm={4}>
-                                <TextField
+                                    InputProps={{
+                                        startAdornment: (
+                                            <FaSchool
+                                                style={{ marginRight: '8px' }}
+                                            />
+                                        ),
+                                    }}
                                     fullWidth
-                                    name="college"
+                                />
+                                <TextField
                                     label="College"
-                                    variant="outlined"
-                                    value={formData.college}
+                                    name="college"
+                                    value={profile.college}
                                     onChange={handleChange}
-                                />
-                            </Grid>
-                            {/* University */}
-                            <Grid xs={12} sm={4}>
-                                <TextField
+                                    InputProps={{
+                                        startAdornment: (
+                                            <FaGraduationCap
+                                                style={{ marginRight: '8px' }}
+                                            />
+                                        ),
+                                    }}
                                     fullWidth
-                                    name="university"
+                                />
+                                <TextField
                                     label="University"
-                                    variant="outlined"
-                                    value={formData.university}
+                                    name="university"
+                                    value={profile.university}
                                     onChange={handleChange}
-                                />
-                            </Grid>
-                            {/* Favorite Subject */}
-                            <Grid xs={12} sm={6}>
-                                <TextField
+                                    InputProps={{
+                                        startAdornment: (
+                                            <FaGraduationCap
+                                                style={{ marginRight: '8px' }}
+                                            />
+                                        ),
+                                    }}
                                     fullWidth
-                                    name="favoriteSubject"
+                                />
+                                <TextField
                                     label="Favorite Subject"
-                                    variant="outlined"
-                                    value={formData.favoriteSubject}
+                                    name="favoriteSubject"
+                                    value={profile.favoriteSubject}
                                     onChange={handleChange}
                                     InputProps={{
                                         startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsStar />
-                                            </InputAdornment>
+                                            <FaStar
+                                                style={{ marginRight: '8px' }}
+                                            />
                                         ),
                                     }}
-                                />
-                            </Grid>
-                            {/* Weak Subject */}
-                            <Grid xs={12} sm={6}>
-                                <TextField
                                     fullWidth
-                                    name="weakSubject"
+                                />
+                                <TextField
                                     label="Weak Subject"
-                                    variant="outlined"
-                                    value={formData.weakSubject}
+                                    name="weakSubject"
+                                    value={profile.weakSubject}
                                     onChange={handleChange}
                                     InputProps={{
                                         startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BsQuestionCircle />
-                                            </InputAdornment>
+                                            <FaBook
+                                                style={{ marginRight: '8px' }}
+                                            />
                                         ),
                                     }}
+                                    fullWidth
                                 />
-                            </Grid>
-                        </Grid>
-                    </Paper>
+                            </Box>
+                        )}
 
-                    <Box sx={{ textAlign: 'center', mt: 2 }}>
+                        {/* Step 3: Professional Information */}
+                        {activeStep === 2 && (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 2,
+                                }}
+                            >
+                                <Typography variant="h6">
+                                    Professional Information
+                                </Typography>
+                                <TextField
+                                    label="Profession"
+                                    name="profession"
+                                    value={profile.profession}
+                                    onChange={handleChange}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <FaBriefcase
+                                                style={{ marginRight: '8px' }}
+                                            />
+                                        ),
+                                    }}
+                                    fullWidth
+                                />
+                                <Box>
+                                    <TextField
+                                        label="Skills"
+                                        value={skillInput}
+                                        onChange={(e) =>
+                                            setSkillInput(e.target.value)
+                                        }
+                                        onKeyDown={(e) =>
+                                            e.key === 'Enter' &&
+                                            (e.preventDefault(),
+                                            handleSkillAdd())
+                                        }
+                                        fullWidth
+                                    />
+                                    <Button
+                                        onClick={handleSkillAdd}
+                                        sx={{ mt: 1 }}
+                                    >
+                                        Add Skill
+                                    </Button>
+                                    <Box
+                                        sx={{
+                                            mt: 1,
+                                            display: 'flex',
+                                            flexWrap: 'wrap',
+                                            gap: 1,
+                                        }}
+                                    >
+                                        {profile.skills.map((skill, index) => (
+                                            <Chip
+                                                key={index}
+                                                label={skill}
+                                                onDelete={() =>
+                                                    handleSkillDelete(skill)
+                                                }
+                                            />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </Box>
+                        )}
+
+                        {/* Step 4: Interests */}
+                        {activeStep === 3 && (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 2,
+                                }}
+                            >
+                                <Typography variant="h6">Interests</Typography>
+                                <Box>
+                                    <TextField
+                                        label="Hobbies"
+                                        value={hobbyInput}
+                                        onChange={(e) =>
+                                            setHobbyInput(e.target.value)
+                                        }
+                                        onKeyDown={(e) =>
+                                            e.key === 'Enter' &&
+                                            (e.preventDefault(),
+                                            handleHobbyAdd())
+                                        }
+                                        fullWidth
+                                    />
+                                    <Button
+                                        onClick={handleHobbyAdd}
+                                        sx={{ mt: 1 }}
+                                    >
+                                        Add Hobby
+                                    </Button>
+                                    <Box
+                                        sx={{
+                                            mt: 1,
+                                            display: 'flex',
+                                            flexWrap: 'wrap',
+                                            gap: 1,
+                                        }}
+                                    >
+                                        {profile.hobbies.map((hobby, index) => (
+                                            <Chip
+                                                key={index}
+                                                label={hobby}
+                                                onDelete={() =>
+                                                    handleHobbyDelete(hobby)
+                                                }
+                                            />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </Box>
+                        )}
+                    </Box>
+
+                    {/* Divider */}
+                    <Divider sx={{ my: 2 }} />
+
+                    {/* Navigation Buttons */}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                        }}
+                    >
                         <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            size="large"
-                            disabled={loading}
-                            sx={{ minWidth: 150 }}
+                            disabled={activeStep === 0}
+                            onClick={() => setActiveStep((prev) => prev - 1)}
+                            variant="outlined"
                         >
-                            {loading ? (
-                                <CircularProgress size={24} color="inherit" />
-                            ) : (
-                                'Save Changes'
-                            )}
+                            Back
                         </Button>
+                        {activeStep < steps.length - 1 ? (
+                            <Button
+                                onClick={() =>
+                                    setActiveStep((prev) => prev + 1)
+                                }
+                                variant="contained"
+                            >
+                                Next
+                            </Button>
+                        ) : (
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                            >
+                                Save Profile
+                            </Button>
+                        )}
                     </Box>
                 </form>
-            </Box>
-
-            {/* Error Modal */}
-            <Dialog open={errorModalOpen} onClose={handleCloseErrorModal}>
-                <DialogTitle>Error</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>{errorMessage}</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseErrorModal} color="primary">
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Container>
+            </Container>
+        </>
     );
 };
 

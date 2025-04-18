@@ -95,7 +95,9 @@ const Panel: React.FC<{
 
                     <Collapse in={accountExpand} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton>
+                            <ListItemButton
+                                onClick={() => navigate('/edit_profile')}
+                            >
                                 <BsPencilFill />
                                 <ListItemText
                                     primary="Edit Profile"
