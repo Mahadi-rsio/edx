@@ -10,6 +10,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import { app } from '../ts/app';
 import { DarkOutlinedSnackbar } from './Utils';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
     userName: string;
@@ -27,6 +28,7 @@ function Topbar(): JSX.Element {
     const [openSnack, setOpenSnack] = useState<boolean>(true);
     const [isLogged, setLogged] = useState<boolean>(false);
 
+    const navigate = useNavigate();
     useEffect(() => {
         onAuthStateChanged(getAuth(app), (user) => {
             if (user) {
@@ -69,7 +71,9 @@ function Topbar(): JSX.Element {
 
                     {/* Right section: Search icon and user chip */}
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <IconButton sx={{ mr: 1 }}>
+                        <IconButton
+                                onClick={() => navigate('/search')} 
+                                sx={{ mr: 1 }}>
                             <BsSearch style={{ fontSize: '1.2rem' }} />
                         </IconButton>
                         <IconButton sx={{ mr: 1 }}>
