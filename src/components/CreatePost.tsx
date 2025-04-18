@@ -11,12 +11,14 @@ import {
     AppBar,
     Toolbar,
     IconButton,
+    Select,
+    MenuItem
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { db, auth } from './../ts/app';
 import { collection, addDoc } from 'firebase/firestore';
 import { DarkOutlinedSnackbar } from './Utils';
-import { BsArrowLeft } from 'react-icons/bs';
+import { BsArrowLeft, BsNewspaper, BsStar, BsBarChart } from 'react-icons/bs';
 import { onAuthStateChanged } from 'firebase/auth';
 
 const CreatePost: React.FC = () => {
@@ -29,6 +31,7 @@ const CreatePost: React.FC = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [errorAlert, setErrorAlert] = useState('');
     const [userId, setUserId] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const navigate = useNavigate();
 
     const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -145,6 +148,31 @@ const CreatePost: React.FC = () => {
                     onKeyDown={handleAddTag}
                     helperText="Press Enter to add a tag"
                 />
+
+
+                <Select
+                    labelId="post-category-label"
+                    id="post-category"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    displayEmpty
+                    sx={{ width: '100%', marginBottom: 2 }}
+                >
+                    
+                    <MenuItem value="News_Feed" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                        <BsNewspaper style={{ marginRight: '5px' }} /> News Feed
+                    </MenuItem>
+                    <MenuItem value="Review_Post" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                        <BsStar style={{ marginRight: '5px' }} /> Review Post
+                    </MenuItem>
+                    <MenuItem value="Poll_Post" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
+                        <BsBarChart style={{ marginRight: '5px' }} /> Poll Post
+                    </MenuItem>
+                </Select>
+
+
+
+
                 <Stack direction="row" spacing={1} flexWrap="wrap">
                     {tags.map((tag, index) => (
                         <Chip
