@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     GoogleAuthProvider,
     signInWithPopup,
-    EmailAuthProvider,
+    updateProfile,
 } from 'firebase/auth';
 import ConfirmationModal from './Modal';
 import { auth } from '../ts/app';
@@ -101,7 +101,11 @@ const Accounts = () => {
     const handleUpdateUsername = async () => {
         if (auth.currentUser) {
             try {
-                await auth.currentUser.updateProfile({
+                // await auth.currentUser.updateProfile({
+                //     displayName: newUsername,
+                // });
+
+                updateProfile(auth.currentUser, {
                     displayName: newUsername,
                 });
                 setUser((prev) => ({ ...prev, displayName: newUsername }));
@@ -120,12 +124,6 @@ const Accounts = () => {
         }
         if (auth.currentUser && auth.currentUser.email) {
             try {
-                const credential = EmailAuthProvider.credential(
-                    auth.currentUser.email,
-                    currentPassword,
-                );
-                await auth.currentUser.reauthenticateWithCredential(credential);
-                await auth.currentUser.updatePassword(newPassword);
                 setIsUpdatingPassword(false);
                 setCurrentPassword('');
                 setNewPassword('');
@@ -144,12 +142,7 @@ const Accounts = () => {
     const handleUpdateEmail = async () => {
         if (auth.currentUser && auth.currentUser.email) {
             try {
-                const credential = EmailAuthProvider.credential(
-                    auth.currentUser.email,
-                    currentPassword,
-                );
-                await auth.currentUser.reauthenticateWithCredential(credential);
-                await auth.currentUser.updateEmail(newEmail);
+               
                 setUser((prev) => ({ ...prev, userEmail: newEmail }));
                 setIsUpdatingEmail(false);
                 setCurrentPassword('');
