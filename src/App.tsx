@@ -9,6 +9,8 @@ const Search = lazy(() => import('./components/Search.tsx'));
 const EditProfile = lazy(() => import('./components/EditProfile.tsx'));
 const Accounts = lazy(() => import('./components/Accounts.tsx'));
 const EditPost = lazy(() => import('./components/EditPost.tsx'));
+//const Fingerprint = lazy(() => import('./components/Fingerprint.tsx'));
+
 
 function App() {
     return (
@@ -34,6 +36,7 @@ function App() {
                     <Route path="/edit_profile" element={<EditProfile />} />
                     <Route path="/accounts" element={<Accounts />} />
                     <Route path="/edit_post/:postId" element={<EditPost />} />
+  
                 </Routes>
             </Suspense>
         </Router>

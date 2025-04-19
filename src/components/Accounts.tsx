@@ -142,7 +142,6 @@ const Accounts = () => {
     const handleUpdateEmail = async () => {
         if (auth.currentUser && auth.currentUser.email) {
             try {
-               
                 setUser((prev) => ({ ...prev, userEmail: newEmail }));
                 setIsUpdatingEmail(false);
                 setCurrentPassword('');
@@ -308,6 +307,37 @@ const Accounts = () => {
                             )}
                             <Divider sx={{ width: '100%' }} />
                         </Box>
+
+                        {/* Update Profile Picture */}
+                        <Box
+                            sx={{
+                                mt: 6,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 2,
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Typography variant="body1" sx={{ ml: 1 }}>
+                                Add Fingerprint for Security
+                            </Typography>
+                            <Box
+                                component="img"
+                                src="/4419038.jpg"
+                                alt="Profile Picture"
+                                sx={{
+                                    width: 100,
+                                    height: 100,
+                                    borderRadius: '50%',
+                                    boxShadow: 3,
+                                }}
+                            />
+                            <Button variant="contained">
+                                Add Fingerprint
+                            </Button>
+                            <Divider sx={{ width: '100%' }} />
+                        </Box>
+                        
 
                         {/* Update Password */}
                         <Box
