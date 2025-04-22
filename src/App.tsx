@@ -9,7 +9,7 @@ const Search = lazy(() => import('./components/Search.tsx'));
 const EditProfile = lazy(() => import('./components/EditProfile.tsx'));
 const Accounts = lazy(() => import('./components/Accounts.tsx'));
 const EditPost = lazy(() => import('./components/EditPost.tsx'));
-//const Fingerprint = lazy(() => import('./components/Fingerprint.tsx'));
+const Profile = lazy(() => import('./components/Profile.tsx'));
 
 
 function App() {
@@ -36,6 +36,9 @@ function App() {
                     <Route path="/edit_profile" element={<EditProfile />} />
                     <Route path="/accounts" element={<Accounts />} />
                     <Route path="/edit_post/:postId" element={<EditPost />} />
+                    <Route path="/profile" element={<Profile />} />
+                    
+                    <Route path="*" element={<div>404 Not Found</div>} />
   
                 </Routes>
             </Suspense>
