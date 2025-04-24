@@ -195,7 +195,12 @@ const Accounts = () => {
                             color="primary"
                             onClick={signInWithGoogle}
                             startIcon={<BsGoogle />}
-                            fullWidth
+                            sx={{
+                                width: '100%',
+                                maxWidth: 300,
+                                borderRadius: 12,
+                                padding: '15px 20px',
+                            }}
                         >
                             Sign in with Google
                         </Button>
@@ -539,20 +544,20 @@ const Accounts = () => {
 
             {/* Centered Image */}
             {!user.userEmail && (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '100vh',
-                    }}
-                >
+                
                     <img
                         src="/undraw_access-account_aydp.svg"
                         alt="Centered Image"
-                        style={{ maxWidth: '50%', maxHeight: '30%' }}
+                        style={{
+                            maxWidth: '50%',
+                            maxHeight: '30%',
+                            marginTop: '80px',
+                            marginLeft: 'auto',
+                            marginRight: 'auto',
+                            display: 'block',
+                        }}
                     />
-                </Box>
+                
             )}
 
             {/* Confirmation Modal */}
