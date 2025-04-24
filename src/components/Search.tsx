@@ -60,6 +60,8 @@ const Test: React.FC = () => {
     const [options, setOptions] = useState<Option[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
+    console.log(loading);
+
     // Fetch keywords from Supabase on component mount
     useEffect(() => {
         fetchKeywords();
@@ -115,10 +117,10 @@ const Test: React.FC = () => {
     };
 
     // Handle input change for suggestions
-    const handleInputChange = (event: React.SyntheticEvent, value: string) => {
-        setInputValue(value);
-        console.log('Input changed:', value, event);
-    };
+    // const handleInputChange = (event: React.SyntheticEvent, value: string) => {
+    //     setInputValue(value);
+    //     console.log('Input changed:', value, event);
+    // };
 
     // Handle submission (used for both Enter key and icon click)
     const handleSubmit = async () => {
@@ -150,69 +152,68 @@ const Test: React.FC = () => {
     };
 
     return (
-        <SearchContainer>
-            <StyledAutocomplete
-                freeSolo
-                options={options}
-                getOptionLabel={(option) =>
-                    typeof option === 'string' ? option : option.label
-                }
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        variant="outlined"
-                        placeholder="Type to search..."
-                        fullWidth
-                        onKeyDown={handleKeyDown} // Detect Enter key press
-                        InputProps={{
-                            ...params.InputProps,
-                            style: { padding: '10px 14px' },
-                            endAdornment: (
-                                <FaSearch
-                                    style={{
-                                        marginLeft: '8px',
-                                        color: '#757575',
-                                        cursor: 'pointer',
-                                    }}
-                                    onClick={handleSubmit} // Trigger submit on icon click
-                                />
-                            ), // Search icon on the right
-                        }}
-                    />
-                )}
-                renderOption={(props, option) => (
-                    <li
-                        {...props}
-                        style={{ display: 'flex', alignItems: 'center' }}
-                    >
-                        <FaSearch
-                            style={{ marginRight: '8px', color: '#757575' }}
-                        />
-                        {option.label}
-                    </li>
-                )}
-                onInputChange={handleInputChange}
-                clearOnEscape
-                clearOnBlur
-                filterOptions={(options, { inputValue }) =>
-                    inputValue.length >= 2
-                        ? options.filter((option) =>
-                              option.label
-                                  .toLowerCase()
-                                  .includes(inputValue.toLowerCase()),
-                          )
-                        : []
-                }
-                loading={loading}
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+            }}
+        >
+            <Box
                 sx={{
-                    '& .MuiAutocomplete-listbox': {
-                        maxHeight: '200px',
-                        borderRadius: '8px',
-                        backgroundColor: '#fff',
-                    },
+                    display: 'flex',
+                    justifyContent: 'center',
+                    padding: '16px',
                 }}
-            />
-        </SearchContainer>
+            >
+                <SearchContainer>
+                    <StyledAutocomplete
+                        freeSolo
+                        options={options}
+                        getOptionLabel={(option) =>
+                            typeof option === 'string' ? option : option.label
+                        }
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="outlined"
+                                placeholder="Type to search..."
+                                fullWidth
+                                onKeyDown={handleKeyDown}
+                                InputProps={{
+                                    ...params.InputProps,
+                                    style: { padding: '10px 14px' },
+                                    endAdornment: (
+                                        <FaSearch
+                                            style={{
+                                                marginLeft: '8px',
+                                                color: '#757575',
+                                                cursor: 'pointer',
+                                            }}
+                                            onClick={handleSubmit}
+                                        />
+                                    ),
+                                }}
+                            />
+                        )}
+                    />
+                </SearchContainer>
+            </Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: 1,
+                }}
+            >
+                <img
+                    src="/undraw_file-searching_2ne8.svg"
+                    alt="Centered Image"
+                    style={{ maxWidth: '30%', maxHeight: '50%' }}
+                />
+            </Box>
+        </Box>
     );
 };
 

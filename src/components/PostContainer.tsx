@@ -12,7 +12,8 @@ import {
 import GroupSuggetion from './GroupSuggestion';
 import Post from './Post';
 import { db } from './../ts/app';
-import { CircularProgress, Button, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
+import { LinerLoader } from './Loader';
 
 interface PostData {
     id: string;
@@ -187,7 +188,7 @@ const PostContainer: React.FC = () => {
             })}
             {loading && (
                 <div style={centerStyle}>
-                    <CircularProgress size={24} />
+                    <LinerLoader />
                 </div>
             )}
             {error && (

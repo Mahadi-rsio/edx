@@ -126,7 +126,7 @@ const Panel: React.FC<{
                                 <BsGearFill style={{ marginRight: '8px' }} />
                                 <ListItemText primary="Settings" />
                             </ListItemButton>
-                            <ListItemButton onClick={handleSettingsToggle}>
+                            <ListItemButton onClick={() => navigate('/plans')}>
                                 <BsGem style={{ marginRight: '8px' }} />
                                 <ListItemText primary="Upgrade to Pro" />
                             </ListItemButton>

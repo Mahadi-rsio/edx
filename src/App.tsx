@@ -1,6 +1,7 @@
 import { Routes, Route, BrowserRouter as Router } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import { CircularProgress, Box } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
+import { CirculerLoader } from './components/Loader.tsx';
 
 // Lazy load the AuthForm component
 const Home = lazy(() => import('./components/Home.tsx'));
@@ -10,7 +11,7 @@ const EditProfile = lazy(() => import('./components/EditProfile.tsx'));
 const Accounts = lazy(() => import('./components/Accounts.tsx'));
 const EditPost = lazy(() => import('./components/EditPost.tsx'));
 const Profile = lazy(() => import('./components/Profile.tsx'));
-
+const Plans = lazy(() => import('./components/Plans'));
 
 function App() {
     return (
@@ -25,7 +26,7 @@ function App() {
                             height: '100vh',
                         }}
                     >
-                        <CircularProgress />
+                        <CirculerLoader />
                     </Box>
                 }
             >
@@ -37,9 +38,46 @@ function App() {
                     <Route path="/accounts" element={<Accounts />} />
                     <Route path="/edit_post/:postId" element={<EditPost />} />
                     <Route path="/profile" element={<Profile />} />
-                    
-                    <Route path="*" element={<div>404 Not Found</div>} />
-  
+                    <Route path="/plans" element={<Plans />} />
+
+                    <Route
+                        path="*"
+                        element={
+                            <>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        height: '100vh',
+                                    }}
+                                >
+                                    <img
+                                        src="/undraw_page-eaten_b2rt.svg"
+                                        alt="Not Found"
+                                        style={{
+                                            maxWidth: '60%',
+                                            maxHeight: '70%',
+                                        }}
+                                    />
+                                    <Typography variant="h6" sx={{ mt: 2 }}>
+                                        404 : Page Not Found
+                                    </Typography>
+                                    <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        sx={{ mt: 2 }}
+                                        onClick={() =>
+                                            (window.location.href = '/')
+                                        }
+                                    >
+                                        Go Home
+                                    </Button>
+                                </Box>
+                            </>
+                        }
+                    />
                 </Routes>
             </Suspense>
         </Router>
