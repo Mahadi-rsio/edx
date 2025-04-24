@@ -62,21 +62,38 @@ const Panel: React.FC<{
                 variant="temporary"
                 open={open}
                 onClose={setClose}
-                disableScrollLock
+                // Let MUI lock body scrolling while the drawer is open:
+                disableScrollLock={false}
+                // if you really need to leave body scrolling enabled,
+                // keep disableScrollLock but make sure the drawer
+                // completely contains its own overscroll (step 2 below)
                 PaperProps={{
                     sx: {
-                        width: { xs: '80%', sm: '300px' }, // Responsive width
-                        overscrollBehavior: 'contain',
+                        width: { xs: '80%', sm: '300px' },
                         background:
                             'linear-gradient(135deg,rgba(0,0,0,0.1) 0%,rgba(30,30,50,0.3) 100%)',
-                        backdropFilter: 'blur(20px)', // Blur effect
-                        WebkitBackdropFilter: 'blur(20px)', // Safari support
-                        boxShadow: 'none', // Optional: remove shadow for a cleaner look
-                        borderLeft: '1px solid rgba(255, 255, 255, 0.3)', // Optional: subtle border
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        boxShadow: 'none',
+                        borderLeft: '1px solid rgba(255, 255, 255, 0.3)',
                         color: 'white',
+
+                        // STEP 2: fully contain any overscroll
+                        // (this prevents the bounce from propagating out)
+                        overscrollBehavior: 'contain',
+                        overscrollBehaviorY: 'contain',
+                        overscrollBehaviorX: 'contain',
+                        // ensure you have a scrolling container inside:
+                        display: 'flex',
+                        flexDirection: 'column',
+
+                        // if your drawer content is long, you probably need:
+                        overflowY: 'auto',
                     },
                 }}
             >
+                {/* Drawer header, list, etc */}
+
                 <List sx={{ scrollBehavior: 'smooth' }}>
                     {/* User Account Section */}
                     <ListItemButton onClick={handleAccountToggle}>
