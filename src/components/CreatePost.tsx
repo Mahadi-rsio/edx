@@ -164,7 +164,7 @@ const CreatePost: React.FC = () => {
             // Navigate to home after 2 seconds
             setTimeout(() => {
                 navigate('/');
-            }, 2000);
+            }, 500);
         } catch (error) {
             console.error('Error adding document: ', error);
             setErrorAlert('Something went wrong.');

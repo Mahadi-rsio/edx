@@ -164,7 +164,7 @@ const Accounts = () => {
                     <IconButton
                         edge="start"
                         color="inherit"
-                        onClick={() => navigate(-1)}
+                        onClick={() => navigate('/')}
                     >
                         <BsArrowLeft size={18} />
                     </IconButton>
