@@ -544,20 +544,18 @@ const Accounts = () => {
 
             {/* Centered Image */}
             {!user.userEmail && (
-                
-                    <img
-                        src="/undraw_access-account_aydp.svg"
-                        alt="Centered Image"
-                        style={{
-                            maxWidth: '50%',
-                            maxHeight: '30%',
-                            marginTop: '80px',
-                            marginLeft: 'auto',
-                            marginRight: 'auto',
-                            display: 'block',
-                        }}
-                    />
-                
+                <img
+                    src="/undraw_access-account_aydp.svg"
+                    alt="Centered Image"
+                    style={{
+                        maxWidth: '50%',
+                        maxHeight: '30%',
+                        marginTop: '80px',
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                        display: 'block',
+                    }}
+                />
             )}
 
             {/* Confirmation Modal */}

@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import { Box, styled } from '@mui/material';
-import { FaSearch } from 'react-icons/fa';
-import { createClient } from '@supabase/supabase-js';
+import React, { useState, useEffect, useCallback } from 'react';
 
-// Supabase client initialization
+import TextField from '@mui/material/TextField';
+import { Box, styled, Divider, Typography } from '@mui/material';
+import { FaSearch, FaTag } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
+import { debounce } from 'lodash';
+import { LinerLoader } from './Loader';
+
 const NEXT_PUBLIC_SUPABASE_URL = 'https://dfsnnzjmndfnhbslndmr.supabase.co';
 const NEXT_PUBLIC_SUPABASE_ANON_KEY =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc25uemptbmRmbmhic2xuZG1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5ODMwMzYsImV4cCI6MjA1NjU1OTAzNn0.P-XAEc51Mi5NoNhg-WsfXBeo98rClWVjWL5er05AVo8';
@@ -14,12 +16,10 @@ const supabase = createClient(
     NEXT_PUBLIC_SUPABASE_ANON_KEY,
 );
 
-// Define the type for autocomplete options
 interface Option {
     label: string;
 }
 
-// Styled Box for the search bar container
 const SearchContainer = styled(Box)(({ theme }) => ({
     width: '100%',
     maxWidth: '600px',
@@ -31,188 +31,174 @@ const SearchContainer = styled(Box)(({ theme }) => ({
     },
 }));
 
-// Styled Autocomplete for custom styling
-const StyledAutocomplete = styled(Autocomplete<Option, false, false, true>)(
-    ({ theme }) => ({
-        '& .MuiOutlinedInput-root': {
-            borderRadius: '12px',
-            backgroundColor: theme.palette.background.paper,
-            transition: 'all 0.3s ease-in-out',
-        },
-        '& .MuiInputLabel-root': {
-            color: theme.palette.text.secondary,
-            fontWeight: 500,
-        },
-        '& .MuiAutocomplete-popupIndicator': {
-            color: theme.palette.primary.main,
-        },
-        '& .MuiAutocomplete-clearIndicator': {
-            color: theme.palette.text.secondary,
-        },
-        '& .MuiAutocomplete-popper': {
-            marginTop: theme.spacing(1.5),
-        },
-    }),
-);
+const OptionBox = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+    cursor: 'pointer',
+}));
 
 const Test: React.FC = () => {
     const [inputValue, setInputValue] = useState<string>('');
     const [options, setOptions] = useState<Option[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [isTextFieldFocused, setIsTextFieldFocused] = useState(false);
+    const navigate = useNavigate();
 
-    console.log(loading);
-
-    // Fetch keywords from Supabase on component mount
-    useEffect(() => {
-        fetchKeywords();
-    }, []);
-
-    // Fetch keywords from Supabase
-    const fetchKeywords = async () => {
-        setLoading(true);
-        try {
-            const { data, error } = await supabase
-                .from('keywords')
-                .select('label')
-                .order('label', { ascending: true });
-
-            if (error) {
-                console.error('Error fetching keywords:', error);
+    const fetchKeywordsDebounced = useCallback(
+        debounce(async (query: string) => {
+            if (!query.trim() || query.length < 2) {
+                setOptions([]);
+                setLoading(false);
                 return;
             }
+            setLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('keywords')
+                    .select('label')
+                    .ilike('label', `%${query}%`)
+                    .order('label', { ascending: true });
+                if (error) throw error;
+                setOptions(data.map((item) => ({ label: item.label })));
+            } catch (err) {
+                console.error('Error fetching keywords:', err);
+            } finally {
+                setLoading(false);
+            }
+        }, 300),
+        [],
+    );
 
-            const fetchedOptions: Option[] = data.map((item) => ({
-                label: item.label,
-            }));
-            setOptions(fetchedOptions);
-        } catch (err) {
-            console.error('Unexpected error:', err);
-        } finally {
+    useEffect(() => {
+        if (inputValue.trim().length >= 2) {
+            fetchKeywordsDebounced(inputValue);
+        } else {
+            setOptions([]);
             setLoading(false);
         }
-    };
+    }, [inputValue, fetchKeywordsDebounced]);
 
-    // Save new keyword to Supabase
     const saveKeyword = async (keyword: string) => {
         try {
             const { error } = await supabase
                 .from('keywords')
                 .insert([{ label: keyword }]);
-
-            if (error) {
-                console.error('Error saving keyword:', error);
-                return;
-            }
-
-            // Update options locally to include the new keyword
+            if (error) throw error;
             setOptions((prev) =>
                 [...prev, { label: keyword }].sort((a, b) =>
                     a.label.localeCompare(b.label),
                 ),
             );
-            console.log(`Keyword "${keyword}" saved to Supabase`);
         } catch (err) {
-            console.error('Unexpected error:', err);
+            console.error('Error saving keyword:', err);
         }
     };
 
-    // Handle input change for suggestions
-    // const handleInputChange = (event: React.SyntheticEvent, value: string) => {
-    //     setInputValue(value);
-    //     console.log('Input changed:', value, event);
-    // };
-
-    // Handle submission (used for both Enter key and icon click)
     const handleSubmit = async () => {
-        if (inputValue.trim()) {
-            const keyword = inputValue.trim();
-            // Check if the keyword already exists (case-insensitive)
-            const keywordExists = options.some(
-                (option) =>
-                    option.label.toLowerCase() === keyword.toLowerCase(),
-            );
-
-            if (!keywordExists) {
-                await saveKeyword(keyword);
-            }
-
-            // Clear the input after submission
-            setInputValue('');
-        }
+        const trimmed = inputValue.trim();
+        if (!trimmed) return;
+        const exists = options.some(
+            (o) => o.label.toLowerCase() === trimmed.toLowerCase(),
+        );
+        if (!exists) await saveKeyword(trimmed);
+        setInputValue('');
     };
 
-    // Handle Enter key press
     const handleKeyDown = async (
         event: React.KeyboardEvent<HTMLDivElement>,
     ) => {
-        if (event.key === 'Enter' && inputValue.trim()) {
-            event.preventDefault(); // Prevent default form submission behavior
+        if (event.key === 'Enter') {
+            event.preventDefault();
             await handleSubmit();
         }
     };
 
+    const handleOptionClick = (label: string) => {
+        navigate(`/search="${label}"`);
+    };
+
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100vh',
-            }}
-        >
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    padding: '16px',
-                }}
-            >
-                <SearchContainer>
-                    <StyledAutocomplete
-                        freeSolo
-                        options={options}
-                        getOptionLabel={(option) =>
-                            typeof option === 'string' ? option : option.label
-                        }
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                variant="outlined"
-                                placeholder="Type to search..."
-                                fullWidth
-                                onKeyDown={handleKeyDown}
-                                InputProps={{
-                                    ...params.InputProps,
-                                    style: { padding: '10px 14px' },
-                                    endAdornment: (
-                                        <FaSearch
-                                            style={{
-                                                marginLeft: '8px',
-                                                color: '#757575',
-                                                cursor: 'pointer',
-                                            }}
-                                            onClick={handleSubmit}
-                                        />
-                                    ),
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <SearchContainer>
+                <TextField
+                    variant="outlined"
+                    placeholder="Type to search..."
+                    fullWidth
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onFocus={() => setIsTextFieldFocused(true)}
+                    onBlur={() => setIsTextFieldFocused(false)}
+                    onKeyDown={handleKeyDown}
+                    InputProps={{
+                        style: { padding: '0px 18px', borderRadius: '12px' },
+                        endAdornment: (
+                            <FaSearch
+                                style={{
+                                    marginLeft: '8px',
+                                    color: '#757575',
+                                    cursor:
+                                        inputValue.trim().length >= 2
+                                            ? 'pointer'
+                                            : 'not-allowed',
                                 }}
+                                onClick={() =>
+                                    inputValue.trim().length >= 2 &&
+                                    fetchKeywordsDebounced(inputValue)
+                                }
                             />
-                        )}
-                    />
-                </SearchContainer>
-            </Box>
+                        ),
+                    }}
+                />
+            </SearchContainer>
+            <Divider sx={{ marginY: -1.5 }} />
             <Box
                 sx={{
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flex: 1,
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: 2,
+                    padding: 2,
                 }}
             >
-                <img
-                    src="/undraw_file-searching_2ne8.svg"
-                    alt="Centered Image"
-                    style={{ maxWidth: '30%', maxHeight: '50%' }}
-                />
+                {loading ? (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            width: '100%',
+                        }}
+                    >
+                        <LinerLoader />
+                    </Box>
+                ) : (
+                    options.map((option, i) => (
+                        <OptionBox
+                            key={i}
+                            onClick={() => handleOptionClick(option.label)}
+                        >
+                            <FaTag color="#888" />
+                            <Typography>{option.label}</Typography>
+                        </OptionBox>
+                    ))
+                )}
             </Box>
+            {!isTextFieldFocused && !inputValue.trim() && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        flex: 1,
+                        mt: 2,
+                    }}
+                >
+                    <img
+                        src="/undraw_file-searching_2ne8.svg"
+                        alt="No search"
+                        style={{ maxWidth: '30%', maxHeight: '50%' }}
+                    />
+                </Box>
+            )}
         </Box>
     );
 };
