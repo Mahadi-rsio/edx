@@ -220,6 +220,9 @@ const Post: React.FC<FacebookPostProps> = ({
                         </Typography>
                     </IconButton>
                     <IconButton
+                        onClick={() => {
+                            navigate('/comment/' + postId);
+                        }}
                         aria-label="comment on post"
                         sx={{ display: 'flex', alignItems: 'center' }}
                     >
