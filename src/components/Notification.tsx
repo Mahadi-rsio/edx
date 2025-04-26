@@ -20,6 +20,8 @@ import {
     FiAlertCircle,
 } from 'react-icons/fi';
 
+import { useNavigate } from 'react-router-dom';
+
 interface Notification {
     id: number;
     type: 'message' | 'success' | 'alert';
@@ -65,6 +67,7 @@ const iconMap = {
 const NotificationPage: React.FC = () => {
     const [tab, setTab] = useState<number>(0);
 
+    const navigate = useNavigate();
     const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
         setTab(newValue);
     };
@@ -79,7 +82,11 @@ const NotificationPage: React.FC = () => {
                 <Toolbar
                     sx={{ display: 'flex', justifyContent: 'space-between' }}
                 >
-                    <IconButton edge="start" color="inherit" aria-label="back">
+                    <IconButton 
+                        edge="start"
+                        color="inherit"
+                        onClick={() => navigate('/')}
+                        aria-label="back">
                         <FiArrowLeft />
                     </IconButton>
                     <Typography
