@@ -13,6 +13,7 @@ const EditPost = lazy(() => import('./components/EditPost.tsx'));
 const Profile = lazy(() => import('./components/Profile.tsx'));
 const Plans = lazy(() => import('./components/Plans'));
 const Comment = lazy(() => import('./components/Comment.tsx'));
+const Notification = lazy(() => import('./components/Notification.tsx'));
 
 function App() {
     return (
@@ -41,6 +42,10 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/plans" element={<Plans />} />
                     <Route path="/comment/:postId" element={<Comment />} />
+                    <Route path="/notification" element={<Notification />} />
+
+                    {/* Add more routes as needed */}
+                    {/* Catch-all route for 404 page */}
 
                     <Route
                         path="*"
@@ -70,9 +75,9 @@ function App() {
                                         variant="outlined"
                                         color="primary"
                                         sx={{ mt: 2 }}
-                                        onClick={() =>
-                                            (window.location.href = '/')
-                                        }
+                                        onClick={() => {
+                                            //navigate('/');
+                                        }}
                                     >
                                         Go Home
                                     </Button>

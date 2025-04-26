@@ -77,7 +77,10 @@ function Topbar(): JSX.Element {
                         >
                             <BsSearch style={{ fontSize: '1.2rem' }} />
                         </IconButton>
-                        <IconButton sx={{ mr: 1 }}>
+                        <IconButton
+                            onClick={() => navigate('/notification')}
+                            sx={{ mr: 1 }}
+                        >
                             <BsBell style={{ fontSize: '1.2rem' }} />
                         </IconButton>
                         <IconButton
